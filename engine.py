@@ -16,10 +16,12 @@ Le programme sera standalone, c'est-à-dire qu'il pourra être exécuté sur n'i
 import os
 import pygame
 from pygame.locals import *
-from random import randrange
+from random import choice
 from constants import *
 
 class Item:
+    """doc string : help(Item)"""
+    """séparer les class dans différents fichiers, dans un sous-dossier"""
     def __init__(self, icon):
         image = pygame.image.load(icon)
         self.image = image
@@ -35,16 +37,13 @@ def random_position():
     """The position of the objets is random.
     Two objects can't have the same position.
     The location must be available."""
-    continuer = True
-    while continuer:
-        nb1 = randrange(MAP_SIZE)
-        nb2 = randrange(MAP_SIZE)
-        if map.sprite(nb1, nb2) == 'O': # ne check que les cases libres
-            for item in map.items: # pas de cumul des objets sur la même case
-                if item.pos_x != nb1 or item.pos_y != nb2:
-                    continuer = False
-                    break
-    return nb1, nb2
+    # OU ??
+    # nb = randrange(len(map.empty_case))
+    # return map.empty_case.pop(nb)
+
+    nb = choice(map.empty_case)
+    map.empty_case.remove(nb)
+    return nb
 
 class Character:
     def __init__(self):
@@ -52,7 +51,7 @@ class Character:
 
         image = pygame.image.load(IMAGE_PJ).convert_alpha()
         self.image = image
-        self.pos_x, self.pos_y = map.PJ_position
+        self.pos_x, self.pos_y = map.PJ_initial_position
         self.position = image.get_rect()
         self.position = self.position.move(self.pos_x * CASE_SIZE, self.pos_y * CASE_SIZE)
         map.items.append(self)
@@ -72,6 +71,7 @@ class Character:
         if is_moving:
             for item in map.items: # collision
                 if self != item and item.is_item and self.position.contains(item.position): # no collision with himself
+                #if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y:
                     self.pick_up(item)
 
             if map.sprite(self.pos_x, self.pos_y) == 'G': # guard
@@ -81,7 +81,7 @@ class Character:
                 elif self.state < 3:
                     print("Le garde vous vois ! C'est la mort !")
                     self.state = 9
-            elif map.sprite(self.pos_x, self.pos_y) == 'S':
+            elif map.sprite(self.pos_x, self.pos_y) == 'S': # + vérif ou endormissement gardien
                 print("Vous vous échappez du labyrinthe ! Fin de partie !")
                 self.state = 8
 
@@ -144,25 +144,28 @@ class Map:
 
                 self.structure = []
                 self.items = []
+                self.empty_case = []
                 nb_D = 0 # number of departure case
                 nb_G = 0 # number of guard case
                 nb_S = 0 # number of stair case
-                nb_A = 0 # number of free case
 
-                for index, line in enumerate(map_line[:MAP_SIZE]): # seules les size premières lignes sont lues, ce qui peut permettre des commenter chaque fichier, lecture moins punitive
+                for y, line in enumerate(map_line[:MAP_SIZE]): # seules les size premières lignes sont lues, ce qui peut permettre des commenter chaque fichier, lecture moins punitive
                     if len(line) < MAP_SIZE:
                         print(f"Map file : height error, height must be more longer than {MAP_SIZE} not {len(line)}")
                         return None
 
                     line = list(line[:MAP_SIZE].upper())
-                    nb_D += line.count('D')
+                    nb_D += line.count('D') # pourquoi pas une liste plate ?
                     nb_G += line.count('G')
                     nb_S += line.count('S')
-                    nb_A += line.count('O')
-                    self.structure.append(line) # seuls les size premiers caractères sont lus, la chaîne de caractère est automatiquement convertie en list
 
-                    if line.count('D')  == 1:
-                        self.PJ_position = (line.index('D'), index)
+                    for x, letter in enumerate(line):
+                        if letter == 'O': # case libre
+                            self.empty_case.append((x, y))
+                        elif letter == 'D': # departure
+                            self.PJ_initial_position = (x, y)
+
+                    self.structure.append(line) # seuls les size premiers caractères sont lus, la chaîne de caractère est automatiquement convertie en list
 
                 if nb_D != 1: # no departure or too many
                     print(f"Number departure error, {MAP_NAME} need one only case with D.")
@@ -173,7 +176,7 @@ class Map:
                 elif nb_S < 1: # no stair
                     print(f"{MAP_NAME} need a Stair case (S) !")
                     return None
-                elif nb_A < 3: # not enough free case
+                elif len(self.empty_case) < 3: # not enough free case
                     print(f"{MAP_NAME} need three or more free cases (A) for items !")
                     return None
 
@@ -185,13 +188,14 @@ class Map:
         return 1
 
     def sprite(self, x, y):
-        return self.structure[y][x]
+        return self.structure[y][x] # /!\
 
 class Game_window:
     def __init__(self):
         if WINDOW_SIZE < 1:
             print(f"WINDOW_SIZE error, must be superior than 0.")
             return None
+
         self.id = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE)) # initialisation de la fenêtre
         self.background = pygame.image.load(IMAGE_BACKGROUND).convert() # chargement de l'image + conversion dans les dimensions adéquates
         self.wall = pygame.image.load(IMAGE_WALL)
@@ -216,7 +220,6 @@ class Game_window:
 
                 if target:
                     self.id.blit(target, (width * CASE_SIZE, height * CASE_SIZE))
-
 
         for item in map.items:
             self.id.blit(item.image, item.position)
