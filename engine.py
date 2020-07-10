@@ -19,41 +19,19 @@ from pygame.locals import *
 from random import choice
 from constants import *
 
-class Item:
+
+class Entity:
     """doc string : help(Item)"""
     """séparer les class dans différents fichiers, dans un sous-dossier"""
-    def __init__(self, icon):
-        image = pygame.image.load(icon)
-        self.image = image
-        self.is_item = True
-        self.pos_x, self.pos_y = random_position()
-        map.items.append(self)
+    def __init__(self, icon, is_item = False):
+        self.is_item = is_item
+        self.image = pygame.image.load(icon).convert_alpha()
 
-        # object placement
-        #self.position = image.get_rect()
-        #self.position = self.position.move(self.pos_x * CASE_SIZE, self.pos_y * CASE_SIZE)
+        if is_item:
+            self.pos_x, self.pos_y = random_position()
+        else:
+            self.pos_x, self.pos_y = map.PJ_initial_position
 
-def random_position():
-    """The position of the objets is random.
-    Two objects can't have the same position.
-    The location must be available."""
-    # OU ??
-    # nb = randrange(len(map.empty_case))
-    # return map.empty_case.pop(nb)
-
-    nb = choice(map.empty_case)
-    map.empty_case.remove(nb)
-    return nb
-
-class Character:
-    def __init__(self):
-        self.is_item = False
-
-        image = pygame.image.load(IMAGE_PJ).convert_alpha()
-        self.image = image
-        self.pos_x, self.pos_y = map.PJ_initial_position
-        self.position = image.get_rect()
-        self.position = self.position.move(self.pos_x * CASE_SIZE, self.pos_y * CASE_SIZE)
         map.items.append(self)
 
     def move(self, direction):
@@ -70,8 +48,7 @@ class Character:
 
         if is_moving:
             for item in map.items: # collision
-                #if self != item and item.is_item and self.position.contains(item.position): # no collision with himself
-                if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y:
+                if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y: # no collision with himself
                     self.pick_up(item)
 
             if map.sprite(self.pos_x, self.pos_y) == 'G': # guard
@@ -108,7 +85,6 @@ class Character:
         elif map.sprite(next_x, next_y) == 'W':
             return False
 
-        self.position = self.position.move(x * CASE_SIZE, y * CASE_SIZE)
         self.pos_x = next_x
         self.pos_y = next_y
         window.blit()
@@ -121,12 +97,26 @@ class Character:
         self.state is incremented
         window is refreshed"""
         print("Great job! You found an object.")
-        if self.state < 3:
+        if self.state < 3: # problème si on augmente le nombre d'objets ?
             self.state += 1
         if self.state == 3:
             print("Vous fabriquez une serringue pour endormir le garde !")
         map.items.remove(item)
         window.blit()
+
+
+def random_position():
+    """The position of the objets is random.
+    Two objects can't have the same position.
+    The location must be available."""
+    # OU ??
+    # nb = randrange(len(map.empty_case))
+    # return map.empty_case.pop(nb)
+
+    nb = choice(map.empty_case)
+    map.empty_case.remove(nb)
+    return nb
+
 
 class Map:
     def __init__(self):
@@ -231,12 +221,12 @@ map = Map()
 init = map.init_Map()
 window = Game_window()
 if init:
-    player = Character()
+    player = Entity(IMAGE_PJ)
     player.state = 0 # 1 : 1 objet, 2 : 2 objets, 3 : 3 objets, 4 : garde endormi, 9 : mort, 8 : fin de labyrinthe
 
-    Item(IMAGE_ETHER)
-    Item(IMAGE_TUBE)
-    Item(IMAGE_NEEDLE)
+    Entity(IMAGE_ETHER, is_item = True)
+    Entity(IMAGE_TUBE, is_item = True)
+    Entity(IMAGE_NEEDLE, is_item = True)
 
     window.blit()
 
