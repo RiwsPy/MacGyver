@@ -47,65 +47,43 @@ def random_position():
     return nb1, nb2
 
 class Character:
-    def __init__(self, image, position):
+    def __init__(self):
         self.is_item = False
 
-        image = pygame.image.load(image).convert_alpha()
+        image = pygame.image.load(IMAGE_PJ).convert_alpha()
         self.image = image
+        self.pos_x, self.pos_y = map.PJ_position
         self.position = image.get_rect()
-        self.position = self.position.move(position[0] * CASE_SIZE, position[1] * CASE_SIZE)
-        self._pos_x, self._pos_y = position
+        self.position = self.position.move(self.pos_x * CASE_SIZE, self.pos_y * CASE_SIZE)
         map.items.append(self)
 
-    @property
-    def pos_x(self):
-        return self._pos_x
-        
-    @pos_x.setter
-    def pos_x(self, value):
-        if self._pos_x != value and value >= 0 and value < MAP_SIZE:
-            self.position = self.position.move((value - self._pos_x) * CASE_SIZE, 0)
-            self._pos_x = value
-            window.blit()
-
-    @property
-    def pos_y(self):
-        return self._pos_y
-        
-    @pos_y.setter
-    def pos_y(self, value):
-        if self._pos_y != value and value >= 0 and value < MAP_SIZE:
-            self.position = self.position.move(0, (value - self._pos_y) * CASE_SIZE)
-            self._pos_y = value
-            window.blit()
-
     def move(self, direction):
+        is_moving = False
+
         if direction == K_RIGHT:
-            self.check_move(self.pos_x+1, self.pos_y)
-                
+            is_moving = self.check_move(1, 0)
         elif direction == K_LEFT:
-            self.check_move(self.pos_x-1, self.pos_y)
-
+            is_moving = self.check_move(-1, 0)
         elif direction == K_UP:
-            self.check_move(self.pos_x, self.pos_y-1)
-
+            is_moving = self.check_move(0, -1)
         elif direction == K_DOWN:
-            self.check_move(self.pos_x, self.pos_y+1)
+            is_moving = self.check_move(0, 1)
 
-        for item in map.items: # collision
-            if item.is_item and self.position.contains(item.position): # no collision with himself
-                self.pick_up(item)
+        if is_moving:
+            for item in map.items: # collision
+                if self != item and item.is_item and self.position.contains(item.position): # no collision with himself
+                    self.pick_up(item)
 
-        if map.sprite(self.pos_x, self.pos_y) == 'G': # guard
-            if self.state == 3: # 3 objets en sa possession
-                print("Vous endormissez le garde !")
-                self.state = 4
-            elif item.state < 3:
-                print("Le garde vous vois ! C'est la mort !")
-                self.state = 9
-        elif map.sprite(self.pos_x, self.pos_y) == 'S':
-            print("Vous vous échappez du labyrinthe ! Fin de partie !")
-            self.state = 8
+            if map.sprite(self.pos_x, self.pos_y) == 'G': # guard
+                if self.state == 3: # 3 objets en sa possession
+                    print("Vous endormissez le garde !")
+                    self.state = 4
+                elif self.state < 3:
+                    print("Le garde vous vois ! C'est la mort !")
+                    self.state = 9
+            elif map.sprite(self.pos_x, self.pos_y) == 'S':
+                print("Vous vous échappez du labyrinthe ! Fin de partie !")
+                self.state = 8
 
 
     def check_move(self, x, y):
@@ -116,18 +94,25 @@ class Character:
             or new position is a Wall
         else:
             new position is saved
+            window is refreshed
         """
+        next_x = self.pos_x + x
+        next_y = self.pos_y + y
+        
         if self.state > 7:
             return False
-        elif x < 0 or y < 0:
+        elif next_x < 0 or next_y < 0:
             return False
-        elif x >= MAP_SIZE or y >= MAP_SIZE:
+        elif next_x >= MAP_SIZE or next_y >= MAP_SIZE:
             return False
-        elif map.sprite(x, y) == 'W':
+        elif map.sprite(next_x, next_y) == 'W':
             return False
 
-        self.pos_x = x
-        self.pos_y = y
+        self.position = self.position.move(x * CASE_SIZE, y * CASE_SIZE)
+        self.pos_x = next_x
+        self.pos_y = next_y
+        window.blit()
+ 
         return True
 
     def pick_up(self, item):
@@ -136,9 +121,10 @@ class Character:
         self.state is incremented
         window is refreshed"""
         print("Great job! You found an object.")
-        self.state += 1
+        if self.state < 3:
+            self.state += 1
         if self.state == 3:
-            print("Vous créez une serringue pour endormir le garde !")
+            print("Vous fabriquez une serringue pour endormir le garde !")
         map.items.remove(item)
         window.blit()
 
@@ -242,7 +228,7 @@ map = Map()
 init = map.init_Map()
 window = Game_window()
 if init:
-    player = Character(IMAGE_PJ, map.PJ_position) # Mac devrait apparaître sur la case D
+    player = Character()
     player.state = 0 # 1 : 1 objet, 2 : 2 objets, 3 : 3 objets, 4 : garde endormi, 9 : mort, 8 : fin de labyrinthe
 
     Item(IMAGE_ETHER)
@@ -258,7 +244,7 @@ if init:
         for event in pygame.event.get():
             if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                 continuer = False
-            elif player.state < 8 and event.type == KEYDOWN and event.key in [K_RIGHT, K_LEFT, K_UP, K_DOWN]:
+            elif event.type == KEYDOWN and event.key in [K_RIGHT, K_LEFT, K_UP, K_DOWN]:
                 player.move(event.key)
 
 #os.system("pause")
