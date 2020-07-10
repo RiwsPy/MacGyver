@@ -1,3 +1,5 @@
+#coding: utf-8
+
 import pygame
 from classes import map
 from classes import window
@@ -6,25 +8,36 @@ from locale import *
 import locale
 from pygame.locals import *
 
+
+def generate_entity() -> None:
+    """entities generation & refresh window"""
+    global MAP
+    MAP = locale.MAP
+
+    Entity(IMAGE_PJ, is_item = False)
+    Entity(IMAGE_ETHER)
+    Entity(IMAGE_TUBE)
+    Entity(IMAGE_NEEDLE)
+
+    locale.WINDOW.refresh()
+
 class Entity:
     """doc string : help(Item)"""
-    """séparer les class dans différents fichiers, dans un sous-dossier"""
-    def __init__(self, icon, is_item = False):
-        global MAP, WINDOW
-        MAP = locale.MAP
-        WINDOW = locale.WINDOW
-        
+    def __init__(self, icon: str, is_item = True) -> None:        
+        """ generate all entities in the labyrinthe """
         self.is_item = is_item
         self.image = pygame.image.load(icon).convert_alpha()
 
         if is_item:
             self.pos_x, self.pos_y = self.random_position()
         else:
-            self.pos_x, self.pos_y = MAP.PJ_initial_position
+            locale.PLAYER = self
+            self.state = 0  # 1 : 1 objet, 2 : 2 objets, 3 : 3 objets, 4 : garde endormi, 9 : mort, 8 : fin de labyrinthe
+            self.pos_x, self.pos_y = locale.MAP.PJ_initial_position
 
         MAP.items.append(self)
 
-    def move(self, direction):
+    def move(self, direction: int) -> None:
         is_moving = False
 
         if direction == K_RIGHT:
@@ -53,7 +66,7 @@ class Entity:
                 self.state = 8
 
 
-    def check_move(self, x, y):
+    def check_move(self, x: int, y: int) -> bool:
         """this function checks the new position of the player
         return False if :
             the game is over or PJ is dead
@@ -77,11 +90,12 @@ class Entity:
 
         self.pos_x = next_x
         self.pos_y = next_y
-        WINDOW.blit()
+        locale.WINDOW.refresh()
 
         return True
 
-    def pick_up(self, item):
+    # item type ????
+    def pick_up(self, item) -> None:
         """if PJ and item position are the same
         item is removed from the ground
         self.state is incremented
@@ -92,9 +106,9 @@ class Entity:
         if self.state == 3:
             print("Vous fabriquez une serringue pour endormir le garde !")
         MAP.items.remove(item)
-        WINDOW.blit()
-        
-    def random_position(self):
+        locale.WINDOW.refresh()
+
+    def random_position(self) -> tuple:
         """The position of the objets is random.
         Two objects can't have the same position.
         The location must be available."""

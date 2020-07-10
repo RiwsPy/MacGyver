@@ -1,21 +1,22 @@
+#coding: utf-8
+
 import os
 from locale import MAP_NAME, MAP_SIZE
 import locale
 
 class Map:
-    def __init__(self):
-        pass
-
-    def init_Map(self): # square map
-        """ Map's initialisation, detection of possibles errors"""
+    def __init__(self) -> None:
         locale.MAP = self
+
+    def check_Map(self) -> bool: # square map
+        """ Map initialisation & map check """
 
         if os.path.exists(MAP_NAME):
             with open(MAP_NAME, "r", encoding = "utf-8") as map_file:
                 map_line = map_file.readlines()
                 if len(map_line) < MAP_SIZE: # width check
                     print(f"Map file : width error, map must be more longer than {MAP_SIZE} not {len(map_line)}")
-                    return None
+                    return False
 
                 self.structure = []
                 self.items = []
@@ -27,7 +28,7 @@ class Map:
                 for y, line in enumerate(map_line[:MAP_SIZE]): # seules les size premières lignes sont lues, ce qui peut permettre des commenter chaque fichier, lecture moins punitive
                     if len(line) < MAP_SIZE:
                         print(f"Map file : height error, height must be more longer than {MAP_SIZE} not {len(line)}")
-                        return None
+                        return False
 
                     line = list(line[:MAP_SIZE].upper())
                     nb_D += line.count('D') # pourquoi pas une liste plate ?
@@ -44,23 +45,23 @@ class Map:
 
                 if nb_D != 1: # no departure or too many
                     print(f"Number departure error, {MAP_NAME} need one only case with D.")
-                    return None
+                    return False
                 elif nb_G < 1: # no guard
                     print(f"{MAP_NAME} need a Guard case (G) !")
-                    return None
+                    return False
                 elif nb_S < 1: # no stair
                     print(f"{MAP_NAME} need a Stair case (S) !")
-                    return None
+                    return False
                 elif len(self.empty_case) < 3: # not enough free case
                     print(f"{MAP_NAME} need three or more free cases (A) for items !")
-                    return None
+                    return False
 
                 print(f"{MAP_NAME} initialisation.")
         else:
             print(f"{MAP_NAME} not found.")
-            return None
+            return False
 
-        return 1
+        return True
 
-    def sprite(self, x, y):
+    def sprite(self, x: int, y: int) -> str:
         return self.structure[y][x] # /!\

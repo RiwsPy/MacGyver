@@ -17,3 +17,4 @@ IMAGE_NEEDLE = PATH + "needle.png"
 
 WINDOW = 0
 MAP = 0
+PLAYER = 0

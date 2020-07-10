@@ -1,10 +1,26 @@
+#coding: utf-8
+
 from locale import *
 import locale
 import pygame
-from classes import map
+from pygame.locals import *
+
+
+def game_loop():
+    continuer = True
+
+    while continuer:
+        pygame.time.Clock().tick(30) # limitation à 30 boucles/seconde
+        for event in pygame.event.get():
+            if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+                continuer = False
+            elif event.type == KEYDOWN and event.key in [K_RIGHT, K_LEFT, K_UP, K_DOWN]:
+                locale.PLAYER.move(event.key)
+
+    #os.system("pause")
 
 class Game_window:
-    def __init__(self):
+    def __init__(self) -> None:
         if WINDOW_SIZE < 1:
             print(f"WINDOW_SIZE error, must be superior than 0.")
             return None
@@ -18,7 +34,7 @@ class Game_window:
         self.stair = pygame.image.load(IMAGE_STAIR)
         self.departure = pygame.image.load(IMAGE_DEPARTURE)
 
-    def blit(self):
+    def refresh(self) -> None:
         self.id.blit(self.background, (0, 0)) # collage de l'image de fond
 
         for height, line in enumerate(locale.MAP.structure):
