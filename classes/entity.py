@@ -2,8 +2,8 @@ import pygame
 from classes import map
 from classes import window
 from random import choice
-from constants import *
-import constants
+from locale import *
+import locale
 from pygame.locals import *
 
 class Entity:
@@ -11,8 +11,8 @@ class Entity:
     """séparer les class dans différents fichiers, dans un sous-dossier"""
     def __init__(self, icon, is_item = False):
         global MAP, WINDOW
-        MAP = constants.MAP
-        WINDOW = constants.WINDOW
+        MAP = locale.MAP
+        WINDOW = locale.WINDOW
         
         self.is_item = is_item
         self.image = pygame.image.load(icon).convert_alpha()

@@ -15,7 +15,7 @@ Le programme sera standalone, c'est-à-dire qu'il pourra être exécuté sur n'i
 
 import os
 import pygame
-from constants import *
+from locale import *
 from classes import entity
 from classes import map
 from classes import window

@@ -1,6 +1,6 @@
 import os
-from constants import MAP_NAME, MAP_SIZE
-import constants
+from locale import MAP_NAME, MAP_SIZE
+import locale
 
 class Map:
     def __init__(self):
@@ -8,7 +8,7 @@ class Map:
 
     def init_Map(self): # square map
         """ Map's initialisation, detection of possibles errors"""
-        constants.MAP = self
+        locale.MAP = self
 
         if os.path.exists(MAP_NAME):
             with open(MAP_NAME, "r", encoding = "utf-8") as map_file:

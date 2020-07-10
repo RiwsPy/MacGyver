@@ -1,5 +1,5 @@
-from constants import *
-import constants
+from locale import *
+import locale
 import pygame
 from classes import map
 
@@ -9,7 +9,7 @@ class Game_window:
             print(f"WINDOW_SIZE error, must be superior than 0.")
             return None
 
-        constants.WINDOW = self
+        locale.WINDOW = self
 
         self.id = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE)) # initialisation de la fenêtre
         self.background = pygame.image.load(IMAGE_BACKGROUND).convert() # chargement de l'image + conversion dans les dimensions adéquates
@@ -21,7 +21,7 @@ class Game_window:
     def blit(self):
         self.id.blit(self.background, (0, 0)) # collage de l'image de fond
 
-        for height, line in enumerate(constants.MAP.structure):
+        for height, line in enumerate(locale.MAP.structure):
             for width, letter in enumerate(line):
                 target = None
                 if letter == 'W': # wall
@@ -36,7 +36,7 @@ class Game_window:
                 if target:
                     self.id.blit(target, (width * CASE_SIZE, height * CASE_SIZE))
 
-        for item in constants.MAP.items:
+        for item in locale.MAP.items:
             self.id.blit(item.image, (item.pos_x * CASE_SIZE, item.pos_y * CASE_SIZE))
 
         pygame.display.flip() # rafraîchissement de la fenêtre
