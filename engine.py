@@ -30,8 +30,8 @@ class Item:
         map.items.append(self)
 
         # object placement
-        self.position = image.get_rect()
-        self.position = self.position.move(self.pos_x * CASE_SIZE, self.pos_y * CASE_SIZE)
+        #self.position = image.get_rect()
+        #self.position = self.position.move(self.pos_x * CASE_SIZE, self.pos_y * CASE_SIZE)
 
 def random_position():
     """The position of the objets is random.
@@ -70,8 +70,8 @@ class Character:
 
         if is_moving:
             for item in map.items: # collision
-                if self != item and item.is_item and self.position.contains(item.position): # no collision with himself
-                #if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y:
+                #if self != item and item.is_item and self.position.contains(item.position): # no collision with himself
+                if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y:
                     self.pick_up(item)
 
             if map.sprite(self.pos_x, self.pos_y) == 'G': # guard
@@ -222,7 +222,7 @@ class Game_window:
                     self.id.blit(target, (width * CASE_SIZE, height * CASE_SIZE))
 
         for item in map.items:
-            self.id.blit(item.image, item.position)
+            self.id.blit(item.image, (item.pos_x * CASE_SIZE, item.pos_y * CASE_SIZE))
 
         pygame.display.flip() # rafraîchissement de la fenêtre
         # possibilité de rafraîchir que les cases ayant changé d'état ?
