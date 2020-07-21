@@ -21,9 +21,9 @@ class Map:
                 self.structure = []
                 self.items = []
                 self.empty_case = []
-                nb_D = 0 # number of departure case
-                nb_G = 0 # number of guard case
-                nb_S = 0 # number of stair case
+                self.PJ_initial_position = None
+                nb_G = 0
+                nb_S = 0
 
                 for y, line in enumerate(map_line[:MAP_SIZE]): # seules les size premières lignes sont lues, ce qui peut permettre des commenter chaque fichier, lecture moins punitive
                     if len(line) < MAP_SIZE:
@@ -31,19 +31,23 @@ class Map:
                         return False
 
                     line = list(line[:MAP_SIZE].upper())
-                    nb_D += line.count('D') # pourquoi pas une liste plate ?
-                    nb_G += line.count('G')
-                    nb_S += line.count('S')
+                    self.structure.append(line) # seuls les size premiers caractères sont lus, la chaîne de caractère est automatiquement convertie en list
 
                     for x, letter in enumerate(line):
                         if letter == 'O': # case libre
                             self.empty_case.append((x, y))
-                        elif letter == 'D': # departure
+                        elif letter == 'W': 
+                            continue
+                        elif letter == 'D' : # departure
                             self.PJ_initial_position = (x, y)
+                        elif letter == 'S':
+                            nb_S += 1
+                        elif letter == 'G':
+                            nb_G += 1
+                        else: 
+                            self.empty_case.append((x, y))
 
-                    self.structure.append(line) # seuls les size premiers caractères sont lus, la chaîne de caractère est automatiquement convertie en list
-
-                if nb_D != 1: # no departure or too many
+                if self.PJ_initial_position is None: # no departure
                     print(f"Number departure error, {MAP_NAME} need one only case with D.")
                     return False
                 elif nb_G < 1: # no guard
@@ -63,5 +67,11 @@ class Map:
 
         return True
 
+
     def sprite(self, x: int, y: int) -> str:
+        """ returns the letter of the coordinate pair (x, y)"""
         return self.structure[y][x] # /!\
+        
+    def my_sprite(self, id) -> str:
+        """ return the letter to the entity's position"""
+        return self.structure[id.pos_y][id.pos_x]

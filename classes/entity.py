@@ -33,35 +33,35 @@ class Entity:
         else:
             locale.PLAYER = self
             self.state = 0  # 1 : 1 objet, 2 : 2 objets, 3 : 3 objets, 4 : garde endormi, 9 : mort, 8 : fin de labyrinthe
-            self.pos_x, self.pos_y = locale.MAP.PJ_initial_position
+            self.pos_x, self.pos_y = MAP.PJ_initial_position
 
         MAP.items.append(self)
 
     def move(self, direction: int) -> None:
-        is_moving = False
+        move_x, move_y = 0, 0
 
         if direction == K_RIGHT:
-            is_moving = self.check_move(1, 0)
+            move_x, move_y = 1, 0
         elif direction == K_LEFT:
-            is_moving = self.check_move(-1, 0)
+            move_x, move_y = -1, 0
         elif direction == K_UP:
-            is_moving = self.check_move(0, -1)
+            move_x, move_y = 0, -1
         elif direction == K_DOWN:
-            is_moving = self.check_move(0, 1)
+            move_x, move_y = 0, 1
 
-        if is_moving:
+        if self.check_move(move_x, move_y):
             for item in MAP.items: # collision
                 if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y: # no collision with himself
                     self.pick_up(item)
 
-            if MAP.sprite(self.pos_x, self.pos_y) == 'G': # guard
+            if MAP.my_sprite(self) == 'G': # guard
                 if self.state == 3: # 3 objets en sa possession
                     print("Vous endormissez le garde !")
                     self.state = 4
                 elif self.state < 3:
                     print("Le garde vous vois ! C'est la mort !")
                     self.state = 9
-            elif MAP.sprite(self.pos_x, self.pos_y) == 'S': # + vérif ou endormissement gardien
+            elif MAP.my_sprite(self) == 'S':
                 print("Vous vous échappez du labyrinthe ! Fin de partie !")
                 self.state = 8
 
@@ -69,6 +69,7 @@ class Entity:
     def check_move(self, x: int, y: int) -> bool:
         """this function checks the new position of the player
         return False if :
+            the move is (0, 0) (no move)
             the game is over or PJ is dead
             or new position aren't in the MAP_SIZE
             or new position is a Wall
@@ -76,6 +77,9 @@ class Entity:
             new position is saved
             window is refreshed
         """
+        if x == 0 and y == 0:
+            return False
+
         next_x = self.pos_x + x
         next_y = self.pos_y + y
         
