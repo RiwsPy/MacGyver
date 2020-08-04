@@ -1,7 +1,6 @@
 #coding: utf-8
 
-from locale import *
-import locale
+from classes.locale import IMAGE_WALL, IMAGE_GUARD, IMAGE_STAIR, IMAGE_GROUND, IMAGE_DEPARTURE, CASE_SIZE, WINDOW_SIZE
 import pygame
 
 
@@ -11,20 +10,17 @@ class Game_window:
             print(f"WINDOW_SIZE error, must be superior than 0.")
             return None
 
-        locale.WINDOW = self
-
         self.id = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE)) # initialisation de la fenêtre
-        self.background = pygame.image.load(IMAGE_BACKGROUND).convert() # chargement de l'image + conversion dans les dimensions adéquates
         self.wall = pygame.image.load(IMAGE_WALL)
         self.guard = pygame.image.load(IMAGE_GUARD)
         self.stair = pygame.image.load(IMAGE_STAIR)
         self.ground = pygame.image.load(IMAGE_GROUND)
         self.departure = pygame.image.load(IMAGE_DEPARTURE)
 
-    def refresh(self) -> None:
+    def refresh_window(self, map_id) -> None:
         #self.id.blit(self.background, (0, 0)) # collage de l'image de fond
 
-        for height, line in enumerate(locale.MAP.structure):
+        for height, line in enumerate(map_id.structure):
             for width, letter in enumerate(line):
                 target = None
                 if letter == 'W': # wall
@@ -43,9 +39,8 @@ class Game_window:
                     target = self.stair
                     self.id.blit(target, (width * CASE_SIZE, height * CASE_SIZE))
 
-
-
-        for item in locale.MAP.items:
+        # classes.map.refresh_map(self.items)
+        for item in map_id.items:
             self.id.blit(item.image, (item.pos_x * CASE_SIZE, item.pos_y * CASE_SIZE))
 
         pygame.display.flip() # rafraîchissement de la fenêtre

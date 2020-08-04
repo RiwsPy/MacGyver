@@ -1,14 +1,18 @@
 #coding: utf-8
 
 import os
-from locale import MAP_NAME, MAP_SIZE
-import locale
+from classes.locale import MAP_NAME, ITEM_NUMBER, MAP_SIZE, IMAGE_PJ, IMAGE_ETHER, IMAGE_TUBE, IMAGE_NEEDLE
+import classes.entity
+
 
 class Map:
     def __init__(self) -> None:
-        locale.MAP = self
-
-    def check_Map(self) -> bool: # square map
+        self.structure = []
+        self.items = []
+        self.empty_case = []
+        self.PJ_initial_position = None
+        
+    def check_Map(self, window_id, map_id) -> bool: # square map
         """ Map initialisation & map check """
 
         if os.path.exists(MAP_NAME):
@@ -18,10 +22,10 @@ class Map:
                     print(f"Map file : width error, map must be more longer than {MAP_SIZE} not {len(map_line)}")
                     return False
 
-                self.structure = []
-                self.items = []
-                self.empty_case = []
-                self.PJ_initial_position = None
+                if ITEM_NUMBER < 1 or ITEM_NUMBER > 6:
+                    print("locale file : ITEM_NUMER error, must be in [1, 6]")
+                    return False
+
                 nb_G = 0
                 nb_S = 0
 
@@ -56,7 +60,7 @@ class Map:
                 elif nb_S < 1: # no stair
                     print(f"{MAP_NAME} need a Stair case (S) !")
                     return False
-                elif len(self.empty_case) < 3: # not enough free case
+                elif len(self.empty_case) < ITEM_NUMBER: # not enough free case
                     print(f"{MAP_NAME} need three or more free cases (A) for items !")
                     return False
 
@@ -65,8 +69,13 @@ class Map:
             print(f"{MAP_NAME} not found.")
             return False
 
-        return True
+        classes.entity.Entity(self, IMAGE_PJ, is_item = False)
+        classes.entity.Entity(self, IMAGE_ETHER)
+        classes.entity.Entity(self, IMAGE_TUBE)
+        classes.entity.Entity(self, IMAGE_NEEDLE)
 
+        window_id.refresh_window(map_id)
+        return True
 
     def sprite(self, x: int, y: int) -> str:
         """ returns the letter of the coordinate pair (x, y)"""

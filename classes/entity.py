@@ -1,43 +1,33 @@
 #coding: utf-8
 
 import pygame
-from classes import map
-from classes import window
 from random import choice
-from locale import *
-import locale
-from pygame.locals import *
-
-
-def generate_entity() -> None:
-    """entities generation & refresh window"""
-    global MAP
-    MAP = locale.MAP
-
-    Entity(IMAGE_PJ, is_item = False)
-    Entity(IMAGE_ETHER)
-    Entity(IMAGE_TUBE)
-    Entity(IMAGE_NEEDLE)
-
-    locale.WINDOW.refresh()
+from classes.locale import MAP_SIZE, ITEM_NUMBER
+from pygame.locals import K_RIGHT, K_LEFT, K_UP, K_DOWN
 
 class Entity:
     """doc string : help(Item)"""
-    def __init__(self, icon: str, is_item = True) -> None:        
+    def __init__(self, map_id, icon: str, is_item = True) -> None:        
         """ generate all entities in the labyrinthe """
+        self.map = map_id
         self.is_item = is_item
         self.image = pygame.image.load(icon).convert_alpha()
+        self.state = 0  # 1 : 1 objet, 2 : 2 objets, 3 : 3 objets, 4 : garde endormi, 9 : mort, 8 : fin de labyrinthe
 
         if is_item:
             self.pos_x, self.pos_y = self.random_position()
         else:
-            locale.PLAYER = self
-            self.state = 0  # 1 : 1 objet, 2 : 2 objets, 3 : 3 objets, 4 : garde endormi, 9 : mort, 8 : fin de labyrinthe
-            self.pos_x, self.pos_y = MAP.PJ_initial_position
+            global PLAYER
+            PLAYER = self
+            self.pos_x, self.pos_y = map_id.PJ_initial_position
 
-        MAP.items.append(self)
+        map_id.items.append(self)
 
-    def move(self, direction: int) -> None:
+    @staticmethod
+    def get_player_id():
+        return PLAYER
+
+    def move(self, window_id, map_id, direction: int) -> None:
         move_x, move_y = 0, 0
 
         if direction == K_RIGHT:
@@ -49,24 +39,24 @@ class Entity:
         elif direction == K_DOWN:
             move_x, move_y = 0, 1
 
-        if self.check_move(move_x, move_y):
-            for item in MAP.items: # collision
+        if self.check_move(window_id, map_id, move_x, move_y):
+            for item in self.map.items: # collision
                 if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y: # no collision with himself
-                    self.pick_up(item)
+                    self.pick_up(window_id, map_id, item)
 
-            if MAP.my_sprite(self) == 'G': # guard
-                if self.state == 3: # 3 objets en sa possession
+            if self.map.my_sprite(self) == 'G': # guard
+                if self.state == ITEM_NUMBER:
                     print("Vous endormissez le garde !")
-                    self.state = 4
-                elif self.state < 3:
+                    self.state += 1
+                elif self.state < ITEM_NUMBER:
                     print("Le garde vous vois ! C'est la mort !")
                     self.state = 9
-            elif MAP.my_sprite(self) == 'S':
+            elif self.map.my_sprite(self) == 'S':
                 print("Vous vous échappez du labyrinthe ! Fin de partie !")
                 self.state = 8
 
 
-    def check_move(self, x: int, y: int) -> bool:
+    def check_move(self, window_id, map_id, x: int, y: int) -> bool:
         """this function checks the new position of the player
         return False if :
             the move is (0, 0) (no move)
@@ -89,28 +79,27 @@ class Entity:
             return False
         elif next_x >= MAP_SIZE or next_y >= MAP_SIZE:
             return False
-        elif MAP.sprite(next_x, next_y) == 'W':
+        elif self.map.sprite(next_x, next_y) == 'W':
             return False
 
         self.pos_x = next_x
         self.pos_y = next_y
-        locale.WINDOW.refresh()
+        window_id.refresh_window(map_id)
 
         return True
 
-    # item type ????
-    def pick_up(self, item) -> None:
+    def pick_up(self, window_id, map_id, item) -> None:
         """if PJ and item position are the same
         item is removed from the ground
         self.state is incremented
         window is refreshed"""
         print("Great job! You found an object.")
-        if self.state < 3: # problème si on augmente le nombre d'objets ?
+        if self.state < ITEM_NUMBER:
             self.state += 1
-        if self.state == 3:
+        if self.state == ITEM_NUMBER:
             print("Vous fabriquez une serringue pour endormir le garde !")
-        MAP.items.remove(item)
-        locale.WINDOW.refresh()
+        self.map.items.remove(item)
+        window_id.refresh_window(map_id)
 
     def random_position(self) -> tuple:
         """The position of the objets is random.
@@ -120,6 +109,6 @@ class Entity:
         # nb = randrange(len(map.empty_case))
         # return map.empty_case.pop(nb)
 
-        nb = choice(MAP.empty_case)
-        MAP.empty_case.remove(nb)
+        nb = choice(self.map.empty_case)
+        self.map.empty_case.remove(nb)
         return nb
