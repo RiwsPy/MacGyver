@@ -4,7 +4,7 @@ MacGyver Escape is a small 2D game coded in Python with PyGame library.
 
 The objectif is to collect three objects randomly in the labyrinth to put the guard to sleep and finish the game.
 
-To clone this game you need to clone it with :
+To clone this game you need to follow these instructions :
 - git clone https://github.com/RiwsPy/MacGyver.git
 - pip install ... xoxisndnffj **(must to completed)**
 

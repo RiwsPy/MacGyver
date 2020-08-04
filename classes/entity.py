@@ -1,18 +1,19 @@
-#coding: utf-8
+# coding: utf-8
 
 import pygame
 from random import choice
 from classes.locale import MAP_SIZE, ITEM_NUMBER
 from pygame.locals import K_RIGHT, K_LEFT, K_UP, K_DOWN
 
+
 class Entity:
     """doc string : help(Item)"""
-    def __init__(self, map_id, icon: str, is_item = True) -> None:        
+    def __init__(self, map_id, icon: str, is_item=True) -> None:
         """ generate all entities in the labyrinthe """
         self.map = map_id
         self.is_item = is_item
         self.image = pygame.image.load(icon).convert_alpha()
-        self.state = 0  # 1 : 1 objet, 2 : 2 objets, 3 : 3 objets, 4 : garde endormi, 9 : mort, 8 : fin de labyrinthe
+        self.state = 0
 
         if is_item:
             self.pos_x, self.pos_y = self.random_position()
@@ -40,11 +41,12 @@ class Entity:
             move_x, move_y = 0, 1
 
         if self.check_move(window_id, map_id, move_x, move_y):
-            for item in self.map.items: # collision
-                if self != item and self.pos_x == item.pos_x and self.pos_y == item.pos_y: # no collision with himself
+            for item in self.map.items:  # collision
+                if self != item and self.pos_x == item.pos_x and\
+                        self.pos_y == item.pos_y:  # no collision with himself
                     self.pick_up(window_id, map_id, item)
 
-            if self.map.my_sprite(self) == 'G': # guard
+            if self.map.my_sprite(self) == 'G':  # guard
                 if self.state == ITEM_NUMBER:
                     print("Vous endormissez le garde !")
                     self.state += 1
@@ -54,7 +56,6 @@ class Entity:
             elif self.map.my_sprite(self) == 'S':
                 print("Vous vous échappez du labyrinthe ! Fin de partie !")
                 self.state = 8
-
 
     def check_move(self, window_id, map_id, x: int, y: int) -> bool:
         """this function checks the new position of the player
@@ -72,7 +73,7 @@ class Entity:
 
         next_x = self.pos_x + x
         next_y = self.pos_y + y
-        
+
         if self.state > 7:
             return False
         elif next_x < 0 or next_y < 0:
