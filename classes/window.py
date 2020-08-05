@@ -32,12 +32,13 @@ class Game_window:
                 else:  # ground
                     target = self.ground
 
-                self.id.blit(target, (pos_x * CASE_SIZE, pos_y * CASE_SIZE))
+                position = (pos_x * CASE_SIZE, pos_y * CASE_SIZE)
+                self.id.blit(target, position)
 
                 if letter == 'G':  # guard
-                    self.id.blit(self.guard, (pos_x * CASE_SIZE, pos_y * CASE_SIZE))
+                    self.id.blit(self.guard, position)
                 elif letter == 'S':  # stair
-                    self.id.blit(self.stair, (pos_x * CASE_SIZE, pos_y * CASE_SIZE))
+                    self.id.blit(self.stair, position)
 
         # classes.map.refresh_map(self.items)
         for item in map_id.items:

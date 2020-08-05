@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import os
-from classes.locale import MAP_NAME, ITEM_NUMBER, MAP_SIZE, IMAGE_PJ, \
+from classes.locale import MAP_NAME, ITEMS_NUMBER, MAP_SIZE, IMAGE_PJ, \
         IMAGE_ETHER, IMAGE_TUBE, IMAGE_NEEDLE
 import classes.entity
 
@@ -13,7 +13,7 @@ class Map:
         self.empty_case = []
         self.PJ_initial_position = None
 
-    def check_Map(self, window_id, map_id) -> bool:  # square map
+    def check_Map(self, window_id) -> bool:  # square map
         """ Map initialisation & map check """
 
         if os.path.exists(MAP_NAME):
@@ -24,38 +24,37 @@ class Map:
                         {MAP_SIZE} not {len(map_line)}")
                     return False
 
-                if ITEM_NUMBER < 1 or ITEM_NUMBER > 6:
-                    print("locale file : ITEM_NUMER error, must be in [1, 6]")
+                if ITEMS_NUMBER != 3:
+                    print("locale file : ITEM_NUMER error, must be 3")
                     return False
 
                 nb_G = 0
                 nb_S = 0
 
                 for y, line in enumerate(map_line[:MAP_SIZE]):
-                    """ seules les size premières lignes sont lues,
-                    ce qui peut permettre des commenter chaque fichier,
-                    lecture moins punitive """
+                    """ only the first lines are read
+                    which can allow comments on each file
+                    less punitive reading """
                     if len(line) < MAP_SIZE:
                         print(f"Map file : height error, height must be more longer than\
                             {MAP_SIZE} not {len(line)}")
                         return False
 
                     line = list(line[:MAP_SIZE].upper())
-                    """ seuls les size premiers caractères sont lus """
                     self.structure.append(line)
 
                     for x, letter in enumerate(line):
-                        if letter == 'O':  # case libre
+                        if letter == 'O':  # empty case
                             self.empty_case.append((x, y))
                         elif letter == 'W':
                             continue
                         elif letter == 'D':  # departure
                             self.PJ_initial_position = (x, y)
-                        elif letter == 'S':
+                        elif letter == 'S':  # stair
                             nb_S += 1
-                        elif letter == 'G':
+                        elif letter == 'G':  # guard
                             nb_G += 1
-                        else:
+                        else:  # defaut case is an empty case
                             self.empty_case.append((x, y))
 
                 if self.PJ_initial_position is None:  # no departure
@@ -68,7 +67,7 @@ class Map:
                 elif nb_S < 1:  # no stair
                     print(f"{MAP_NAME} need a Stair case (S) !")
                     return False
-                elif len(self.empty_case) < ITEM_NUMBER:
+                elif len(self.empty_case) < ITEMS_NUMBER:
                     # not enough free case
                     print(f"{MAP_NAME} need three or more free cases (A)\
                         for items !")
@@ -79,18 +78,18 @@ class Map:
             print(f"{MAP_NAME} not found.")
             return False
 
-        classes.entity.Entity(self, IMAGE_PJ, is_item=False)
-        classes.entity.Entity(self, IMAGE_ETHER)
-        classes.entity.Entity(self, IMAGE_TUBE)
-        classes.entity.Entity(self, IMAGE_NEEDLE)
+        classes.entity.Entity(window_id, self, IMAGE_PJ, is_item=False)
+        classes.entity.Entity(window_id, self, IMAGE_ETHER)
+        classes.entity.Entity(window_id, self, IMAGE_TUBE)
+        classes.entity.Entity(window_id, self, IMAGE_NEEDLE)
 
-        window_id.refresh_window(map_id)
+        window_id.refresh_window(self)
         return True
 
     def sprite(self, x: int, y: int) -> str:
-        """ returns the letter of the coordinate pair (x, y)"""
+        """ returns the letter of the coordinate pair (x, y) """
         return self.structure[y][x]  # /!\
 
     def my_sprite(self, id) -> str:
-        """ return the letter to the entity's position"""
+        """ return the letter to the entity's position """
         return self.structure[id.pos_y][id.pos_x]

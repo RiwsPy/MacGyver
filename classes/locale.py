@@ -16,4 +16,7 @@ IMAGE_TUBE = PATH + "tube.png"
 IMAGE_NEEDLE = PATH + "needle.png"
 
 FPS_MAX = 30
-ITEM_NUMBER = 3
+ITEMS_NUMBER = 3
+
+STATE_DEAD = 9
+STATE_OVER = 8

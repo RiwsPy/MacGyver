@@ -2,14 +2,15 @@
 
 import pygame
 from random import choice
-from classes.locale import MAP_SIZE, ITEM_NUMBER
+from classes.locale import MAP_SIZE, ITEMS_NUMBER, STATE_DEAD, STATE_OVER
 from pygame.locals import K_RIGHT, K_LEFT, K_UP, K_DOWN
 
 
 class Entity:
     """doc string : help(Item)"""
-    def __init__(self, map_id, icon: str, is_item=True) -> None:
+    def __init__(self, window_id, map_id, icon: str, is_item=True) -> None:
         """ generate all entities in the labyrinthe """
+        self.window = window_id
         self.map = map_id
         self.is_item = is_item
         self.image = pygame.image.load(icon).convert_alpha()
@@ -28,37 +29,34 @@ class Entity:
     def get_player_id():
         return PLAYER
 
-    def move(self, window_id, map_id, direction: int) -> None:
+    def move(self, direction: int) -> None:
+        """ allows the player to move in the map """
         move_x, move_y = 0, 0
 
         if direction == K_RIGHT:
-            move_x, move_y = 1, 0
+            move_x = 1
         elif direction == K_LEFT:
-            move_x, move_y = -1, 0
+            move_x = -1
         elif direction == K_UP:
-            move_x, move_y = 0, -1
+            move_y = -1
         elif direction == K_DOWN:
-            move_x, move_y = 0, 1
+            move_y = 1
 
-        if self.check_move(window_id, map_id, move_x, move_y):
+        if self.check_move(move_x, move_y):
             for item in self.map.items:  # collision
                 if self != item and self.pos_x == item.pos_x and\
                         self.pos_y == item.pos_y:  # no collision with himself
-                    self.pick_up(window_id, map_id, item)
+                    self.pick_up(item)
 
             if self.map.my_sprite(self) == 'G':  # guard
-                if self.state == ITEM_NUMBER:
-                    print("Vous endormissez le garde !")
-                    self.state += 1
-                elif self.state < ITEM_NUMBER:
-                    print("Le garde vous vois ! C'est la mort !")
-                    self.state = 9
-            elif self.map.my_sprite(self) == 'S':
-                print("Vous vous échappez du labyrinthe ! Fin de partie !")
-                self.state = 8
+                self.meet_guard()
+            elif self.map.my_sprite(self) == 'S':  # stair
+                print("Congratulations! You escape from the labyrinth!\
+                    Game over !")
+                self.state = STATE_OVER
 
-    def check_move(self, window_id, map_id, x: int, y: int) -> bool:
-        """this function checks the new position of the player
+    def check_move(self, x: int, y: int) -> bool:
+        """ This function checks the new position of the player
         return False if :
             the move is (0, 0) (no move)
             the game is over or PJ is dead
@@ -74,7 +72,8 @@ class Entity:
         next_x = self.pos_x + x
         next_y = self.pos_y + y
 
-        if self.state > 7:
+        if self.state == STATE_OVER or \
+                self.state == STATE_DEAD:
             return False
         elif next_x < 0 or next_y < 0:
             return False
@@ -85,30 +84,36 @@ class Entity:
 
         self.pos_x = next_x
         self.pos_y = next_y
-        window_id.refresh_window(map_id)
+        self.window.refresh_window(self.map)
 
         return True
 
-    def pick_up(self, window_id, map_id, item) -> None:
-        """if PJ and item position are the same
+    def pick_up(self, item) -> None:
+        """If PJ and item position are the same
         item is removed from the ground
         self.state is incremented
         window is refreshed"""
         print("Great job! You found an object.")
-        if self.state < ITEM_NUMBER:
+        if self.state < ITEMS_NUMBER:
             self.state += 1
-        if self.state == ITEM_NUMBER:
-            print("Vous fabriquez une serringue pour endormir le garde !")
+        if self.state == ITEMS_NUMBER:
+            print("You craft a syringe to put the guard to sleep!")
         self.map.items.remove(item)
-        window_id.refresh_window(map_id)
+        self.window.refresh_window(self.map)
+
+    def meet_guard(self):
+        """ the player meet the guard: what's going on ?"""
+        if self.state == ITEMS_NUMBER:
+            print("You put the guard to sleep!")
+            self.state += 1
+        elif self.state < ITEMS_NUMBER:
+            print("The guard sees you! It's death !")
+            self.state = STATE_DEAD
 
     def random_position(self) -> tuple:
-        """The position of the objets is random.
+        """Object's position is a random choice
         Two objects can't have the same position.
         The location must be available."""
-        # OU ??
-        # nb = randrange(len(map.empty_case))
-        # return map.empty_case.pop(nb)
 
         nb = choice(self.map.empty_case)
         self.map.empty_case.remove(nb)
