@@ -40,9 +40,9 @@ class Game_window:
                 elif letter == 'S':  # stair
                     self.id.blit(self.stair, position)
 
-        # classes.map.refresh_map(self.items)
         for item in map_id.items:
-            self.id.blit(item.image, (item.pos_x * CASE_SIZE, item.pos_y * CASE_SIZE))
+            self.id.blit(
+                item.image, (item.pos_x * CASE_SIZE, item.pos_y * CASE_SIZE))
 
         pygame.display.flip()  # rafraîchissement de la fenêtre
         # possibilité de rafraîchir que les cases ayant changé d'état ?

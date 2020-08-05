@@ -16,7 +16,7 @@ class Entity:
         self.image = pygame.image.load(icon).convert_alpha()
         self.state = 0
 
-        if is_item:
+        if is_item: # héritage ??
             self.pos_x, self.pos_y = self.random_position()
         else:
             global PLAYER
