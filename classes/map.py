@@ -14,8 +14,15 @@ class Map:
         self.PJ_initial_position = None
 
     def check_Map(self, window_id) -> bool:  # square map
-        """ Map initialisation & map check """
+        """
+            Map initialisation and check
 
+            *param window_id: window id
+            *type id: window.Game_window
+            *return: False if an error is occurred
+                during the map load, True otherwise
+            *rtype: bool
+        """
         if os.path.exists(MAP_NAME):
             with open(MAP_NAME, "r", encoding="utf-8") as map_file:
                 map_line = map_file.readlines()
@@ -87,9 +94,26 @@ class Map:
         return True
 
     def sprite(self, x: int, y: int) -> str:
-        """ returns the letter of the coordinate pair (x, y) """
+        """
+            returns the letter of the coordinate pair (x, y)
+
+            *param x: x-axis
+            *param y: y-axis
+            *type x: int
+            *type y: int
+            *return: the letter of map file
+            *rtype: str
+        """
         return self.structure[y][x]  # /!\
 
     def my_sprite(self, id) -> str:
-        """ return the letter to the entity's position """
+        """
+            return the letter to the entity's position
+
+            *param id: entity id
+            *type id: entity.Entity
+            *return: the map letter to
+                the player's coordinates
+            *rtype: str
+        """
         return self.structure[id.pos_y][id.pos_x]

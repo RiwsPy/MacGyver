@@ -1,11 +1,14 @@
 # coding: utf-8
 
-from classes.locale import IMAGE_WALL, IMAGE_GUARD, IMAGE_STAIR, IMAGE_GROUND,\
-    IMAGE_DEPARTURE, CASE_SIZE, WINDOW_SIZE, WINDOW_TITLE
+from classes.locale import IMAGE_GUARD, IMAGE_STAIR, IMAGE_GROUND,\
+    IMAGE_DEPARTURE, CASE_SIZE, WINDOW_SIZE, WINDOW_TITLE, IMAGE_WALL
 import pygame
 
 
 class Game_window:
+    """
+        Initializes the game window
+    """
     def __init__(self) -> None:
         if WINDOW_SIZE < 1:
             print("WINDOW_SIZE error, must be superior than 0.")
@@ -14,14 +17,21 @@ class Game_window:
         # window initialisation
         self.id = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
         self.wall = pygame.image.load(IMAGE_WALL)
+        self.departure = pygame.image.load(IMAGE_DEPARTURE)
+        self.ground = pygame.image.load(IMAGE_GROUND)
         self.guard = pygame.image.load(IMAGE_GUARD)
         self.stair = pygame.image.load(IMAGE_STAIR)
-        self.ground = pygame.image.load(IMAGE_GROUND)
-        self.departure = pygame.image.load(IMAGE_DEPARTURE)
 
         pygame.display.set_caption(WINDOW_TITLE)
 
     def refresh_window(self, map_id) -> None:
+        """
+            Refresh the game window
+
+            *param map_id: of the map to refresh
+            *type map_id: map.Map
+            *return: None
+        """
         for pos_y, line in enumerate(map_id.structure):
             for pos_x, letter in enumerate(line):
                 target = None
@@ -44,5 +54,4 @@ class Game_window:
             self.id.blit(
                 item.image, (item.pos_x * CASE_SIZE, item.pos_y * CASE_SIZE))
 
-        pygame.display.flip()  # rafraîchissement de la fenêtre
-        # possibilité de rafraîchir que les cases ayant changé d'état ?
+        pygame.display.flip()  # window refresh

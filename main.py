@@ -6,14 +6,6 @@ from classes.locale import FPS_MAX
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE, K_RIGHT, K_LEFT, K_UP,\
     K_DOWN
 
-"""
-Labyrinthe game : MacGyver must escape !
-
-Script Python
-Files:
-------
-"""
-
 
 def main() -> None:
     # game window initialisation
@@ -25,15 +17,15 @@ def main() -> None:
 
 
 def game_loop() -> None:
-    continuer = True
+    run = True
     player = entity.Entity.get_player_id()
 
-    while continuer:
-        pygame.time.Clock().tick(FPS_MAX)  # limitation à 30 boucles/seconde
+    while run:
+        pygame.time.Clock().tick(FPS_MAX)  # limitation to 30 loops/seconde
         for event in pygame.event.get():
             if event.type == QUIT or \
                     event.type == KEYDOWN and event.key == K_ESCAPE:
-                continuer = False
+                run = False
             elif event.type == KEYDOWN and event.key in \
                     [K_RIGHT, K_LEFT, K_UP, K_DOWN]:
                 player.move(event.key)
