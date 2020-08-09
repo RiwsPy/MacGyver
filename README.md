@@ -5,6 +5,7 @@ MacGyver Escape is a small 2D game coded in Python with PyGame library.
 To win : collect three objects randomly in the labyrinth (needle, ether and plastic tube) to craft a syringe and put the guard to sleep. It's the only way to escape.
 
 Script: Python
+
 Files:
 - classes/ (modules)
     - locale.py (constants)
