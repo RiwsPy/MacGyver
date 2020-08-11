@@ -49,6 +49,7 @@ class Entity:
     def move(self, direction: int) -> None:
         """
             Allows the entity to move in the map
+            and refresh the window
 
             *param direction: pygame.event.key
             *type direction: int
@@ -75,9 +76,9 @@ class Entity:
             if letter == 'G':  # guard
                 self.meet_guard()
             elif letter == 'S':  # stair
-                print("Congratulations! You escape from the labyrinth!\
-                    Game over !")
-                self.state = STATE_OVER
+                self.end_game()
+
+            self.window.refresh_window(self.map)
 
     def check_move(self, x: int, y: int) -> bool:
         """
@@ -89,7 +90,6 @@ class Entity:
                 * new position is a Wall
             else:
                 * new position is saved
-                * window is refreshed
 
             *param x: x-axis movement
             *param y: y-axis movement
@@ -116,16 +116,14 @@ class Entity:
 
         self.pos_x = next_x
         self.pos_y = next_y
-        self.window.refresh_window(self.map)
 
         return True
 
-    def pick_up(self, item):
+    def pick_up(self, item) -> None:
         """
             If PJ and item position are the same:
             * item is removed from the ground
             * self.state is incremented
-            * window is refreshed
 
             *param item: item id
             *type item: entity.Entity
@@ -137,9 +135,8 @@ class Entity:
         if self.state == ITEMS_NUMBER:
             print("You craft a syringe to put the guard to sleep!")
         self.map.items.remove(item)
-        self.window.refresh_window(self.map)
 
-    def meet_guard(self):
+    def meet_guard(self) -> None:
         """
             The player meet the guard: what's going on ?
 
@@ -152,11 +149,21 @@ class Entity:
             print("The guard sees you! It's death !")
             self.state = STATE_DEAD
 
-    def random_position(self):
+    def end_game(self) -> None:
         """
-            Object's position is a random choice
-            Two objects can't have the same position.
-            The location must be available.
+            The game is ending
+
+            *return: None
+        """
+        print("Congratulations! You escape from the labyrinth!\
+            Game over !")
+        self.state = STATE_OVER
+
+    def random_position(self) -> tuple:
+        """
+            Object's position is randomly chosen
+            Two objects can't have the same position
+            The location must be available
 
             *return: (x-axis, y-axis)
             *rtype: tuple
