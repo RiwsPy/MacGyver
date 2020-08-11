@@ -1,5 +1,9 @@
 # coding: utf-8
 
+"""
+    Class to manage the Map
+"""
+
 import os
 from classes.locale import MAP_NAME, ITEMS_NUMBER, MAP_SIZE, IMAGE_PJ, \
     IMAGE_ITEM_1, IMAGE_ITEM_2, IMAGE_ITEM_3, \
@@ -7,8 +11,14 @@ from classes.locale import MAP_NAME, ITEMS_NUMBER, MAP_SIZE, IMAGE_PJ, \
 import classes.entity
 
 
-class Map:
+class MapManager:
+    """
+        Class to create the map
+    """
     def __init__(self) -> None:
+        """
+            Map initialisation
+        """
         self.structure = []
         self.items = []
         self.empty_case = []
@@ -16,10 +26,10 @@ class Map:
 
     def check_Map(self, window_id) -> bool:  # square map
         """
-            Map initialisation and check
+            Map check errors
 
             *param window_id: window id
-            *type id: window.Game_window
+            *type id: window.WindowManager
             *return: False if an error is occurred
                 during the map load, True otherwise
             *rtype: bool
@@ -83,7 +93,7 @@ class Map:
             return False
 
         # generate PJ
-        classes.entity.Entity(window_id, self, IMAGE_PJ, is_item=False)
+        classes.entity.EntityManager(window_id, self, IMAGE_PJ, is_item=False)
 
         # generate items
         if ITEMS_NUMBER > 6 or ITEMS_NUMBER < 1:
@@ -97,7 +107,7 @@ class Map:
                 print(f"locale file : error : IMAGE_ITEM_{i} is None")
                 return False
 
-            classes.entity.Entity(window_id, self, item_name_list[i],
+            classes.entity.EntityManager(window_id, self, item_name_list[i],
                                   is_item=True)
 
         window_id.refresh_window(self)
@@ -121,7 +131,7 @@ class Map:
             return the letter to the entity's position
 
             *param id: entity id
-            *type id: entity.Entity
+            *type id: entity.EntityManager
             *return: the map letter to
                 the player's coordinates
             *rtype: str

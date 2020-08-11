@@ -1,14 +1,18 @@
 # coding: utf-8
 
+"""
+    Items and player of the game
+"""
+
 import pygame
 from random import choice
 from classes.locale import MAP_SIZE, ITEMS_NUMBER, STATE_DEAD, STATE_OVER
 from pygame.locals import K_RIGHT, K_LEFT, K_UP, K_DOWN
 
 
-class Entity:
+class EntityManager:
     """
-        Generate an entity in the labyrinthe
+        Generate an entity in the labyrinth
     """
     def __init__(self, window_id, map_id, icon: str, is_item=True) -> None:
         """
@@ -17,8 +21,8 @@ class Entity:
             *param icon: icon file name
             *param is_item: true if the entity is an item
                 false if is the player
-            *type window_id: window.Game_window
-            *type map_id: map.Map
+            *type window_id: window.WindowManager
+            *type map_id: map.MapManager
             *type icon: str
             *is_item: bool
             *return: None
@@ -28,21 +32,33 @@ class Entity:
         self.map = map_id
         self.image = pygame.image.load(icon).convert_alpha()
         self.state = 0
+        self.pos_x, self.pos_y = (0, 0)
 
         if is_item:
-            self.pos_x, self.pos_y = self.random_position()
+            position = self.random_position()
         else:
             global PLAYER
             PLAYER = self
-            self.pos_x, self.pos_y = map_id.PJ_initial_position
+            position = map_id.PJ_initial_position
 
+        self.set_position(position)
         map_id.items.append(self)
+
+    def set_position(self, position: tuple) -> None:
+        """
+            Save entity's position
+
+            *param position: new position of the entity
+            *type position: tuple
+            *return: None
+        """
+        self.pos_x, self.pos_y = position
 
     @staticmethod
     def get_player_id():
         """
             *return: player's ID
-            *rtype: entity.Entity
+            *rtype: entity.EntityManager
         """
         return PLAYER
 
@@ -86,7 +102,7 @@ class Entity:
             return False if :
                 * the move is (0, 0) (no move)
                 * the game is over or PJ is dead
-                * new position aren't in the MAP_SIZE
+                * new position is outside the screen
                 * new position is a Wall
             else:
                 * new position is saved
@@ -126,7 +142,7 @@ class Entity:
             * self.state is incremented
 
             *param item: item id
-            *type item: entity.Entity
+            *type item: entity.EntityManager
             *return: None
         """
         print("Great job! You found an object.")

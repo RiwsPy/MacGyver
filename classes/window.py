@@ -1,15 +1,22 @@
 # coding: utf-8
 
+"""
+    Class to manage the window
+"""
+
 from classes.locale import IMAGE_GUARD, IMAGE_STAIR, IMAGE_GROUND,\
     IMAGE_DEPARTURE, CASE_SIZE, WINDOW_SIZE, WINDOW_TITLE, IMAGE_WALL
 import pygame
 
 
-class Game_window:
+class WindowManager:
     """
         Initializes the game window
     """
     def __init__(self) -> None:
+        """
+            Window initialisation
+        """
         if WINDOW_SIZE < 1:
             print("WINDOW_SIZE error, must be superior than 0.")
             return None
@@ -29,7 +36,7 @@ class Game_window:
             Refresh the game window
 
             *param map_id: of the map to refresh
-            *type map_id: map.Map
+            *type map_id: map.MapManager
             *return: None
         """
         for pos_y, line in enumerate(map_id.structure):
