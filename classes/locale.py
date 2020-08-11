@@ -11,12 +11,16 @@ IMAGE_STAIR = PATH + "stair.png"
 IMAGE_DEPARTURE = PATH + "departure.png"
 IMAGE_GROUND = PATH + "ground.png"
 IMAGE_PJ = PATH + "PJ.png"
-IMAGE_ETHER = PATH + "ether.png"
-IMAGE_TUBE = PATH + "tube.png"
-IMAGE_NEEDLE = PATH + "needle.png"
+
+ITEMS_NUMBER = 3
+IMAGE_ITEM_1 = PATH + "ether.png"
+IMAGE_ITEM_2 = PATH + "tube.png"
+IMAGE_ITEM_3 = PATH + "needle.png"
+IMAGE_ITEM_4 = None
+IMAGE_ITEM_5 = None
+IMAGE_ITEM_6 = None
 
 FPS_MAX = 30
-ITEMS_NUMBER = 3
 
 STATE_DEAD = 9
 STATE_OVER = 8

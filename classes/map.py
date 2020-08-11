@@ -2,7 +2,8 @@
 
 import os
 from classes.locale import MAP_NAME, ITEMS_NUMBER, MAP_SIZE, IMAGE_PJ, \
-        IMAGE_ETHER, IMAGE_TUBE, IMAGE_NEEDLE
+    IMAGE_ITEM_1, IMAGE_ITEM_2, IMAGE_ITEM_3, \
+    IMAGE_ITEM_4, IMAGE_ITEM_5, IMAGE_ITEM_6
 import classes.entity
 
 
@@ -29,10 +30,6 @@ class Map:
                 if len(map_line) < MAP_SIZE:  # width check
                     print(f"Map file : width error, map must be more longer than\
                         {MAP_SIZE} not {len(map_line)}")
-                    return False
-
-                if ITEMS_NUMBER != 3:
-                    print("locale file : ITEM_NUMER error, must be 3")
                     return False
 
                 nb_G = 0
@@ -66,18 +63,18 @@ class Map:
 
                 if self.PJ_initial_position is None:  # no departure
                     print(f"Number departure error, {MAP_NAME}\
-                        need one only case with D.")
+                        needs one only case with D.")
                     return False
                 elif nb_G < 1:  # no guard
-                    print(f"{MAP_NAME} need a Guard case (G) !")
+                    print(f"{MAP_NAME} needs a Guard case (G) !")
                     return False
                 elif nb_S < 1:  # no stair
-                    print(f"{MAP_NAME} need a Stair case (S) !")
+                    print(f"{MAP_NAME} needs a Stair case (S) !")
                     return False
                 elif len(self.empty_case) < ITEMS_NUMBER:
                     # not enough free case
-                    print(f"{MAP_NAME} need three or more free cases (A)\
-                        for items !")
+                    print(f"{MAP_NAME} needs {ITEMS_NUMBER} \
+                        or more free cases (A) for items !")
                     return False
 
                 print(f"{MAP_NAME} initialisation.")
@@ -85,10 +82,23 @@ class Map:
             print(f"{MAP_NAME} not found.")
             return False
 
+        # generate PJ
         classes.entity.Entity(window_id, self, IMAGE_PJ, is_item=False)
-        classes.entity.Entity(window_id, self, IMAGE_ETHER)
-        classes.entity.Entity(window_id, self, IMAGE_TUBE)
-        classes.entity.Entity(window_id, self, IMAGE_NEEDLE)
+
+        # generate items
+        if ITEMS_NUMBER > 6 or ITEMS_NUMBER < 1:
+            print("locale file : ITEM_NUMBER error, must be in [1, 6]")
+            return False
+
+        item_name_list = [IMAGE_ITEM_1, IMAGE_ITEM_2, IMAGE_ITEM_3,
+                          IMAGE_ITEM_4, IMAGE_ITEM_5, IMAGE_ITEM_6]
+        for i in range(ITEMS_NUMBER):
+            if item_name_list[i] is None:
+                print(f"locale file : error : IMAGE_ITEM_{i} is None")
+                return False
+
+            classes.entity.Entity(window_id, self, item_name_list[i],
+                                  is_item=True)
 
         window_id.refresh_window(self)
         return True

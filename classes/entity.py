@@ -26,7 +26,6 @@ class Entity:
 
         self.window = window_id
         self.map = map_id
-        self.is_item = is_item
         self.image = pygame.image.load(icon).convert_alpha()
         self.state = 0
 
