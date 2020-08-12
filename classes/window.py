@@ -29,6 +29,7 @@ class WindowManager:
         self.guard = pygame.image.load(IMAGE_GUARD)
         self.stair = pygame.image.load(IMAGE_STAIR)
 
+        # window title
         pygame.display.set_caption(WINDOW_TITLE)
 
     def refresh_window(self, map_id) -> None:
