@@ -16,12 +16,13 @@ Files:
 - map (labyrinth structure)
 
 
+
 To clone and play to this game, you must follow these instructions :
 - git clone https://github.com/RiwsPy/MacGyver.git
 - cd MacGyver/
 - pipenv install
 - pipenv shell
-- pipenv main.py
+- python3 main.py
 
 See the **Pipfile.lock** for more details on dependies.
 

@@ -5,8 +5,8 @@
 """
 
 import pygame
-from random import choice
-from classes.locale import MAP_SIZE, ITEMS_NUMBER, STATE_DEAD, STATE_OVER
+from classes.locale import ITEMS_NUMBER, STATE_DEAD, STATE_OVER,\
+    GUARD_CHAR, STAIR_CHAR
 from pygame.locals import K_RIGHT, K_LEFT, K_UP, K_DOWN
 
 
@@ -14,58 +14,73 @@ class EntityManager:
     """
         Generate an entity in the labyrinth
     """
-    def __init__(self, window_id, map_id, icon: str, is_item=True) -> None:
+    def __init__(self, map_id, icon: str, position: tuple) -> None:
         """
-            *param window_id: window id
             *param map_id: map id
             *param icon: icon file name
-            *param is_item: true if the entity is an item
-                false if is the player
-            *type window_id: window.WindowManager
+            *param position: entity's position
             *type map_id: map.MapManager
             *type icon: str
-            *is_item: bool
-            *return: None
-        """
-
-        self.window = window_id
-        self.map = map_id
-        self.image = pygame.image.load(icon).convert_alpha()
-        self.state = 0
-        self.pos_x, self.pos_y = (0, 0)
-
-        if is_item:
-            position = self.random_position()
-        else:
-            global PLAYER
-            PLAYER = self
-            position = map_id.PJ_initial_position
-
-        self.set_position(position)
-        map_id.items.append(self)
-
-    def set_position(self, position: tuple) -> None:
-        """
-            Save entity's position
-
-            *param position: new position of the entity
             *type position: tuple
             *return: None
         """
-        self.pos_x, self.pos_y = position
 
-    @staticmethod
-    def get_player_id():
+        self.map = map_id
+        self.image = pygame.image.load(icon).convert_alpha()
+        self._position = position
+        self.state = 0
+
+    @property
+    def pos_x(self) -> int:
         """
-            *return: player's ID
-            *rtype: entity.EntityManager
+            *return: x-axis of the entity
+            *rtype: int
         """
-        return PLAYER
+        return self.position[0]
+
+    @property
+    def pos_y(self) -> int:
+        """
+            *return: y-axis of the entity
+            *rtype: int
+        """
+        return self.position[1]
+
+    @property
+    def position(self) -> tuple:
+        """
+            *return: (x-axis, y-axis) of the entity
+            *rtype: tuple
+        """
+        return self._position
+
+    @position.setter
+    def position(self, value: tuple) -> None:
+        """
+            Erase the entity's position by an another
+            *param value: tuple of the new position
+            *type value: tuple
+            *return: None
+        """
+        if type(value) == tuple:
+            self._position = value
+
+    def game_loop_entity(self, event) -> bool:
+        """
+            Wait a keyboard event
+            *param event: keyboard event
+            *type event: pygame.event
+            *return: True if the key is managed, False otherwise
+            *rtype: bool
+        """
+        if event.key in [K_RIGHT, K_LEFT, K_UP, K_DOWN]:
+            self.move(event.key)
+            return True
+        return False
 
     def move(self, direction: int) -> None:
         """
             Allows the entity to move in the map
-            and refresh the window
 
             *param direction: pygame.event.key
             *type direction: int
@@ -83,29 +98,21 @@ class EntityManager:
             move_y = 1
 
         if self.check_move(move_x, move_y):
+            self.position = (self.pos_x + move_x, self.pos_y + move_y)
             for item in self.map.items:  # collision
-                if self != item and self.pos_x == item.pos_x and\
-                        self.pos_y == item.pos_y:  # no collision with himself
+                # no collision with himself
+                if self != item and self.position == item.position:
                     self.pick_up(item)
 
             letter = self.map.my_sprite(self)
-            if letter == 'G':  # guard
+            if letter == GUARD_CHAR:  # guard
                 self.meet_guard()
-            elif letter == 'S':  # stair
+            elif letter == STAIR_CHAR:  # stair
                 self.end_game()
-
-            self.window.refresh_window(self.map)
 
     def check_move(self, x: int, y: int) -> bool:
         """
-            Check the new position of the entity
-            return False if :
-                * the move is (0, 0) (no move)
-                * the game is over or PJ is dead
-                * new position is outside the screen
-                * new position is a Wall
-            else:
-                * new position is saved
+            Check if the new position of the entity is available
 
             *param x: x-axis movement
             *param y: y-axis movement
@@ -116,24 +123,14 @@ class EntityManager:
         """
         if x == 0 and y == 0:
             return False
+        elif self.state == STATE_OVER or \
+                self.state == STATE_DEAD:
+            return False
 
         next_x = self.pos_x + x
         next_y = self.pos_y + y
 
-        if self.state == STATE_OVER or \
-                self.state == STATE_DEAD:
-            return False
-        elif next_x < 0 or next_y < 0:
-            return False
-        elif next_x >= MAP_SIZE or next_y >= MAP_SIZE:
-            return False
-        elif self.map.sprite(next_x, next_y) == 'W':
-            return False
-
-        self.pos_x = next_x
-        self.pos_y = next_y
-
-        return True
+        return self.map.is_valid_position((next_x, next_y))
 
     def pick_up(self, item) -> None:
         """
@@ -174,16 +171,3 @@ class EntityManager:
         print("Congratulations! You escape from the labyrinth!\
             Game over !")
         self.state = STATE_OVER
-
-    def random_position(self) -> tuple:
-        """
-            Object's position is randomly chosen
-            Two objects can't have the same position
-            The location must be available
-
-            *return: (x-axis, y-axis)
-            *rtype: tuple
-        """
-        nb = choice(self.map.empty_case)
-        self.map.empty_case.remove(nb)
-        return nb

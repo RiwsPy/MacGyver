@@ -1,10 +1,9 @@
 # coding: utf-8
 
 import pygame
-from classes import window, map, entity
-from classes.locale import FPS_MAX
-from pygame.locals import QUIT, KEYDOWN, K_ESCAPE, K_RIGHT, K_LEFT, K_UP,\
-    K_DOWN
+from classes import window, map
+from classes.locale import FPS_MAX, MAP_FILENAME
+from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
 
 
 def main() -> None:
@@ -12,20 +11,21 @@ def main() -> None:
         Run the game
     """
     # game window initialisation
-    window_id = window.WindowManager()
     map_id = map.MapManager()
+    window_id = window.WindowManager()
 
-    if map_id.check_Map(window_id):
-        game_loop()
+    player = map_id.load_from_file(MAP_FILENAME)
+    if player:
+        game_loop(player, window_id, map_id)
 
 
-def game_loop() -> None:
+def game_loop(player, window_id, map_id) -> None:
     """
         Main loop
         Waiting for an event
     """
     continue_main = True
-    player = entity.EntityManager.get_player_id()
+    window_id.refresh_window(map_id)
 
     while continue_main:
         pygame.time.Clock().tick(FPS_MAX)  # limitation to 30 loops/seconde
@@ -33,9 +33,9 @@ def game_loop() -> None:
             if event.type == QUIT or \
                     event.type == KEYDOWN and event.key == K_ESCAPE:
                 continue_main = False
-            elif event.type == KEYDOWN and event.key in \
-                    [K_RIGHT, K_LEFT, K_UP, K_DOWN]:
-                player.move(event.key)
+            elif event.type == KEYDOWN:
+                if player.game_loop_entity(event):
+                    window_id.refresh_window(map_id)
 
 
 if __name__ == "__main__":

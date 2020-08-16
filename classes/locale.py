@@ -1,8 +1,8 @@
 MAP_SIZE = 15
 CASE_SIZE = 32
 WINDOW_SIZE = MAP_SIZE * CASE_SIZE
-MAP_NAME = "map"
 WINDOW_TITLE = "MacGyver Escape"
+MAP_FILENAME = "map"
 
 PATH = "ressource/"
 IMAGE_WALL = PATH + "wall.png"
@@ -11,6 +11,12 @@ IMAGE_STAIR = PATH + "stair.png"
 IMAGE_DEPARTURE = PATH + "departure.png"
 IMAGE_GROUND = PATH + "ground.png"
 IMAGE_PJ = PATH + "PJ.png"
+
+PATH_CHAR = "O"
+WALL_CHAR = "W"
+STAIR_CHAR = "S"
+DEPARTURE_CHAR = "D"
+GUARD_CHAR = "G"
 
 ITEMS_NUMBER = 3
 IMAGE_ITEM_1 = PATH + "ether.png"
