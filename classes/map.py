@@ -37,24 +37,15 @@ class MapManager:
         if os.path.exists(map_file):
             with open(map_file, "r", encoding="utf-8") as open_map_file:
                 lines = open_map_file.readlines()
-                if len(lines) < MAP_SIZE:  # width check
-                    print(f"Map file : width error, map must be more longer than\
-                        {MAP_SIZE} not {len(lines)}")
-                    return None
 
                 player = None
                 for y, line in enumerate(lines[:MAP_SIZE]):
                     """ only the first lines are read
                     which can allow comments on each file
                     less punitive reading """
-                    if len(line) < MAP_SIZE:
-                        print(f"Map file : height error, height must be more longer than\
-                            {MAP_SIZE} not {len(line)}")
-                        return None
 
                     line = line[:MAP_SIZE].upper()
                     for x, letter in enumerate(line):
-                        # lien letter/icon ? > dict[letter] = icon ?
                         if letter in letter_to_icon:
                             self.path_position.add((x, y))
                             if letter != PATH_CHAR:
