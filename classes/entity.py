@@ -6,14 +6,14 @@
 
 import pygame
 from classes.locale import ITEMS_NUMBER, STATE_DEAD, STATE_OVER,\
-    GUARD_CHAR, STAIR_CHAR
+    GUARD_CHAR, STAIR_CHAR, PATH_CHAR
 
 
 class EntityManager:
     """
         Generate an entity in the labyrinth
     """
-    def __init__(self, map_id, icon: str, position: tuple) -> None:
+    def __init__(self, map_id, icon: str, position: tuple, char: str) -> None:
         """
             *param map_id: map id
             *param icon: icon file name
@@ -28,6 +28,9 @@ class EntityManager:
         self.icon = pygame.image.load(icon).convert_alpha()
         self._position = position
         self.state = 0
+        self.char = char
+
+        self.map.entity_position[position] = self
 
     @property
     def pos_x(self) -> int:
@@ -62,6 +65,7 @@ class EntityManager:
             *return: None
         """
         if type(value) == tuple:
+            del self.map.entity_position[self.position]
             self._position = value
 
     @property
@@ -103,16 +107,17 @@ class EntityManager:
         next_position = getattr(self, event, self.position)
         if self.check_move(next_position):
             self.position = next_position
-            for item in self.map.items:  # collision
-                # no collision with himself
-                if self != item and self.position == item.position:
-                    self.pick_up(item)
-
-            letter = self.map.sprite(self.position)
-            if letter == GUARD_CHAR:  # guard
-                self.meet_guard()
-            elif letter == STAIR_CHAR:  # stair
-                self.end_game()
+            if self.position in self.map.entity_position:
+                id = self.map.entity_position[self.position]
+                if id != self:
+                    char = id.char
+                    if char == PATH_CHAR:
+                        self.pick_up(id)
+                    elif char == GUARD_CHAR:
+                        self.meet_guard()
+                    elif char == STAIR_CHAR:
+                        self.end_game()
+            self.map.entity_position[self.position] = self
             return True
         return False
 
@@ -148,7 +153,6 @@ class EntityManager:
             self.state += 1
         if self.state == ITEMS_NUMBER:
             print("You craft a syringe to put the guard to sleep!")
-        self.map.items.remove(item)
 
     def meet_guard(self) -> None:
         """

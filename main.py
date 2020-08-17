@@ -36,7 +36,7 @@ def game_loop(player, window_id, map_id) -> None:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     continue_main = False
-                elif event.key in dict_player_movement.keys():
+                elif event.key in dict_player_movement:
                     if player.move(dict_player_movement[event.key]):
                         window_id.refresh_window(map_id)
             elif event.type == QUIT:

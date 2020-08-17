@@ -5,18 +5,21 @@ WINDOW_TITLE = "MacGyver Escape"
 MAP_FILENAME = "map"
 
 PATH = "ressource/"
-IMAGE_WALL = PATH + "wall.png"
-IMAGE_GUARD = PATH + "guard.png"
-IMAGE_STAIR = PATH + "stair.png"
-IMAGE_DEPARTURE = PATH + "departure.png"
-IMAGE_GROUND = PATH + "ground.png"
-IMAGE_PJ = PATH + "PJ.png"
-
 PATH_CHAR = "O"
-WALL_CHAR = "W"
 STAIR_CHAR = "S"
 DEPARTURE_CHAR = "D"
 GUARD_CHAR = "G"
+WALL_CHAR = "W"
+
+IMAGE_WALL = PATH + "wall.png"
+IMAGE_GROUND = PATH + "ground.png"
+
+letter_to_icon = {
+    STAIR_CHAR: PATH + "stair.png",
+    DEPARTURE_CHAR: PATH + "PJ.png",
+    PATH_CHAR: IMAGE_GROUND,
+    GUARD_CHAR: PATH + "guard.png"
+}
 
 ITEMS_NUMBER = 3
 IMAGE_ITEM_1 = PATH + "ether.png"
