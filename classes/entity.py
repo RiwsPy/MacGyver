@@ -7,7 +7,6 @@
 import pygame
 from classes.locale import ITEMS_NUMBER, STATE_DEAD, STATE_OVER,\
     GUARD_CHAR, STAIR_CHAR
-from pygame.locals import K_RIGHT, K_LEFT, K_UP, K_DOWN
 
 
 class EntityManager:
@@ -26,7 +25,7 @@ class EntityManager:
         """
 
         self.map = map_id
-        self.image = pygame.image.load(icon).convert_alpha()
+        self.icon = pygame.image.load(icon).convert_alpha()
         self._position = position
         self.state = 0
 
@@ -65,72 +64,74 @@ class EntityManager:
         if type(value) == tuple:
             self._position = value
 
-    def game_loop_entity(self, event) -> bool:
+    @property
+    def right(self):
         """
-            Wait a keyboard event
-            *param event: keyboard event
-            *type event: pygame.event
-            *return: True if the key is managed, False otherwise
-            *rtype: bool
+            Move to right
         """
-        if event.key in [K_RIGHT, K_LEFT, K_UP, K_DOWN]:
-            self.move(event.key)
-            return True
-        return False
+        return (self.pos_x + 1, self.pos_y)
 
-    def move(self, direction: int) -> None:
+    @property
+    def left(self):
+        """
+            Move to left
+        """
+        return (self.pos_x - 1, self.pos_y)
+
+    @property
+    def up(self):
+        """
+            Move to up
+        """
+        return (self.pos_x, self.pos_y - 1)
+
+    @property
+    def down(self):
+        """
+            Move to down
+        """
+        return (self.pos_x, self.pos_y + 1)
+
+    def move(self, event: str) -> None:
         """
             Allows the entity to move in the map
 
-            *param direction: pygame.event.key
-            *type direction: int
+            *param event: method to apply
+            *type event: str
             *return: None
         """
-        move_x, move_y = 0, 0
-
-        if direction == K_RIGHT:
-            move_x = 1
-        elif direction == K_LEFT:
-            move_x = -1
-        elif direction == K_UP:
-            move_y = -1
-        elif direction == K_DOWN:
-            move_y = 1
-
-        if self.check_move(move_x, move_y):
-            self.position = (self.pos_x + move_x, self.pos_y + move_y)
+        next_position = getattr(self, event, self.position)
+        if self.check_move(next_position):
+            self.position = next_position
             for item in self.map.items:  # collision
                 # no collision with himself
                 if self != item and self.position == item.position:
                     self.pick_up(item)
 
-            letter = self.map.my_sprite(self)
+            letter = self.map.sprite(self.position)
             if letter == GUARD_CHAR:  # guard
                 self.meet_guard()
             elif letter == STAIR_CHAR:  # stair
                 self.end_game()
+            return True
+        return False
 
-    def check_move(self, x: int, y: int) -> bool:
+    def check_move(self, position: tuple) -> bool:
         """
             Check if the new position of the entity is available
 
-            *param x: x-axis movement
-            *param y: y-axis movement
-            *type x: int
-            *type y: int
+            *param position: (x-axis, y-axis) position
+            *type position: tuple
             *return: True if the entity can move, False otherwise
             *rtype: bool
         """
-        if x == 0 and y == 0:
+        if self.position == position:
             return False
         elif self.state == STATE_OVER or \
                 self.state == STATE_DEAD:
             return False
 
-        next_x = self.pos_x + x
-        next_y = self.pos_y + y
-
-        return self.map.is_valid_position((next_x, next_y))
+        return self.map.is_valid_position(position)
 
     def pick_up(self, item) -> None:
         """
