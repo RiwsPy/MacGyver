@@ -6,6 +6,7 @@ from config.locale import MAP_FILENAME, FPS_MAX
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE,\
     K_RIGHT, K_LEFT, K_UP, K_DOWN
 
+
 def main() -> None:
     """
         Run the game
@@ -18,6 +19,7 @@ def main() -> None:
     player = map_id.load_from_file(MAP_FILENAME)
     if player:
         main_loop(player, window_id, map_id)
+
 
 def main_loop(player, window_id, map_id) -> None:
     """
@@ -32,7 +34,7 @@ def main_loop(player, window_id, map_id) -> None:
     """
     continue_main = True
     window_id.refresh_window(map_id)
-    dict_player_movement = \
+    event_to_method = \
         {K_RIGHT: "right", K_LEFT: "left", K_UP: "up", K_DOWN: "down"}
 
     while continue_main:
@@ -41,11 +43,12 @@ def main_loop(player, window_id, map_id) -> None:
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     continue_main = False
-                elif event.key in dict_player_movement:
-                    if player.move(dict_player_movement[event.key]):
-                        window_id.refresh_window(map_id)
+                elif event.key in event_to_method:
+                    positions_refresh = player.move(event_to_method[event.key])
+                    window_id.refresh_soft(map_id, positions_refresh)
             elif event.type == QUIT:
                 continue_main = False
+
 
 if __name__ == "__main__":
     main()

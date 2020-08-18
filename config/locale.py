@@ -24,12 +24,12 @@ letter_to_icon = {
 ITEMS_NUMBER = 3
 
 items_icon = [
-PATH + "ether.png",
-PATH + "tube.png",
-PATH + "needle.png",
-None]
+    PATH + "ether.png",
+    PATH + "tube.png",
+    PATH + "needle.png",
+    None]
 
 FPS_MAX = 30
 
-STATE_DEAD = 99
-STATE_OVER = 98
+STATE_OVER = MAP_SIZE * MAP_SIZE + 1
+STATE_DEAD = MAP_SIZE * MAP_SIZE + 2

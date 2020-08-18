@@ -5,7 +5,6 @@
 """
 
 import pygame
-from config import locale
 from config.locale import ITEMS_NUMBER, STATE_DEAD, STATE_OVER,\
     GUARD_CHAR, STAIR_CHAR, PATH_CHAR
 
@@ -28,8 +27,8 @@ class EntityManager:
         self.map = map_id
         self.icon = pygame.image.load(icon).convert_alpha()
         self._position = position
-        self.state = 0
         self.char = char
+        self.state = 0
 
     @property
     def pos_x(self) -> int:
@@ -65,6 +64,7 @@ class EntityManager:
         """
         if type(value) == tuple:
             del self.map.entity_position[self.position]
+            self.map.entity_position[value] = self
             self._position = value
 
     @property
@@ -95,30 +95,30 @@ class EntityManager:
         """
         return (self.pos_x, self.pos_y + 1)
 
-    def move(self, event: str) -> None:
+    def move(self, method: str) -> tuple:
         """
             Allows the entity to move in the map
 
-            *param event: method to apply
-            *type event: str
-            *return: None
+            *param method: method to apply
+            *type method: str
+            *return: (old_position, next_position)
+            *rtype: tuple
         """
-        next_position = getattr(self, event, self.position)
+        next_position = getattr(self, method, self.position)
         if self.check_move(next_position):
+            old_position = self.position
+            if next_position in self.map.entity_position:
+                id = self.map.entity_position[next_position]
+                char = id.char
+                if char == PATH_CHAR:
+                    self.pick_up(id)
+                elif char == GUARD_CHAR:
+                    self.meet_guard()
+                elif char == STAIR_CHAR:
+                    self.end_game()
             self.position = next_position
-            if self.position in self.map.entity_position:
-                id = self.map.entity_position[self.position]
-                if id != self:
-                    char = id.char
-                    if char == PATH_CHAR:
-                        self.pick_up(id)
-                    elif char == GUARD_CHAR:
-                        self.meet_guard()
-                    elif char == STAIR_CHAR:
-                        self.end_game()
-            self.map.entity_position[self.position] = self
-            return True
-        return False
+            return (old_position, next_position)
+        return ()
 
     def check_move(self, position: tuple) -> bool:
         """
@@ -159,10 +159,9 @@ class EntityManager:
 
             *return: None
         """
-        if self.state == ITEMS_NUMBER:
+        if self.state >= ITEMS_NUMBER:
             print("You put the guard to sleep!")
-            self.state += 1
-        elif self.state < ITEMS_NUMBER:
+        else:
             print("The guard sees you! It's death !")
             self.state = STATE_DEAD
 

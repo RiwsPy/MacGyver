@@ -5,10 +5,8 @@
 """
 
 import os
-from config import locale
 from config.locale import ITEMS_NUMBER, MAP_SIZE, \
-    items_icon, PATH_CHAR, START_CHAR, letter_to_icon,\
-    STATE_OVER
+    items_icon, PATH_CHAR, START_CHAR, letter_to_icon
 from game.entity import EntityManager
 from random import choice
 
@@ -37,8 +35,9 @@ class MapManager:
         if os.path.exists(map_file):
             with open(map_file, "r", encoding="utf-8") as open_map_file:
                 lines = open_map_file.readlines()
-
+                # player id
                 player = None
+
                 for y, line in enumerate(lines[:MAP_SIZE]):
                     """ only the first lines are read
                     which can allow comments on each file
@@ -61,18 +60,18 @@ class MapManager:
                     print(f"Start case error, {map_file}\
                         needs one case with {START_CHAR}.")
                     return None
-                if len(self.path_position) < ITEMS_NUMBER:
+                if ITEMS_NUMBER > (len(self.path_position) -
+                                   len(self.entity_position)):
                     print(f"{map_file} needs {ITEMS_NUMBER} \
                         or more free cases {PATH_CHAR} for items !")
                     return None
 
                 print(f"{map_file} initialisation.")
-        else:
-            print(f"{map_file} not found.")
-            return None
+                self.generate_items()
+                return player
 
-        self.generate_items()
-        return player
+        print(f"{map_file} not found.")
+        return None
 
     def generate_items(self) -> None:
         """
@@ -80,16 +79,13 @@ class MapManager:
             *return: None
         """
         # generate items
-        if ITEMS_NUMBER > STATE_OVER-2 or ITEMS_NUMBER < 1:
-            print(f"locale file : ITEM_NUMBER error, must be in [1, {STATE_OVER-2}]")
-            return None
         if ITEMS_NUMBER > len(items_icon):
-            print(f"locale file : items_icon error, contains not enough items")
+            print("locale file : items_icon error, contains not enough items")
             return None
 
         empty_case = self.path_position - set(self.entity_position.keys())
         empty_case = list(empty_case)
-            
+
         for i in range(ITEMS_NUMBER):
             if items_icon[i] is None:
                 print(f"locale file : value error : items_icon[{i}] is None")

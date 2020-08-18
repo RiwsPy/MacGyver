@@ -4,7 +4,6 @@
     Class to manage the window
 """
 
-from config import locale
 from config.locale import IMAGE_GROUND, CASE_SIZE, WINDOW_SIZE,\
     WINDOW_TITLE, IMAGE_WALL, MAP_SIZE
 import pygame
@@ -44,10 +43,30 @@ class WindowManager:
 
                 if map_id.is_valid_position((x, y)):
                     self.id.blit(self.ground_icon, position)
-                    if (x, y) in map_id.entity_position:
-                        self.id.blit(map_id.entity_position[(x, y)].icon,
-                                     position)
                 else:
                     self.id.blit(self.wall_icon, position)
+
+        for position, id in map_id.entity_position.items():
+            position = (position[0] * CASE_SIZE, position[1] * CASE_SIZE)
+            self.id.blit(id.icon, position)
+
+        pygame.display.flip()  # window refresh
+
+    def refresh_soft(self, map_id, positions: tuple) -> None:
+        """
+            Refresh specific position in game window
+
+            *param map_id: of the map to refresh
+            *param positions: tuple of two positions to refresh
+            *type map_id: map.MapManager
+            *type positions: tuple(tuple, tuple)
+            *return: None
+        """
+        for position in positions:
+            pixel_position = (position[0]*CASE_SIZE, position[1]*CASE_SIZE)
+            self.id.blit(self.ground_icon, pixel_position)
+            if position in map_id.entity_position:
+                self.id.blit(map_id.entity_position[position].icon,
+                             pixel_position)
 
         pygame.display.flip()  # window refresh
