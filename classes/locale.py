@@ -7,7 +7,7 @@ MAP_FILENAME = "map"
 PATH = "ressource/"
 PATH_CHAR = "O"
 STAIR_CHAR = "S"
-DEPARTURE_CHAR = "D"
+START_CHAR = "D"
 GUARD_CHAR = "G"
 WALL_CHAR = "W"
 
@@ -16,20 +16,20 @@ IMAGE_GROUND = PATH + "ground.png"
 
 letter_to_icon = {
     STAIR_CHAR: PATH + "stair.png",
-    DEPARTURE_CHAR: PATH + "PJ.png",
+    START_CHAR: PATH + "PJ.png",
     PATH_CHAR: IMAGE_GROUND,
     GUARD_CHAR: PATH + "guard.png"
 }
 
 ITEMS_NUMBER = 3
-IMAGE_ITEM_1 = PATH + "ether.png"
-IMAGE_ITEM_2 = PATH + "tube.png"
-IMAGE_ITEM_3 = PATH + "needle.png"
-IMAGE_ITEM_4 = None
-IMAGE_ITEM_5 = None
-IMAGE_ITEM_6 = None
+
+items_icon = [
+PATH + "ether.png",
+PATH + "tube.png",
+PATH + "needle.png",
+None]
 
 FPS_MAX = 30
 
-STATE_DEAD = 9
-STATE_OVER = 8
+STATE_DEAD = 99
+STATE_OVER = 98

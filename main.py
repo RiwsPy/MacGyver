@@ -2,14 +2,14 @@
 
 import pygame
 from classes import window, map
-from classes.locale import FPS_MAX, MAP_FILENAME
+from classes.locale import MAP_FILENAME, FPS_MAX
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE,\
     K_RIGHT, K_LEFT, K_UP, K_DOWN
-
 
 def main() -> None:
     """
         Run the game
+        *return: None
     """
     # game window initialisation
     map_id = map.MapManager()
@@ -17,13 +17,18 @@ def main() -> None:
 
     player = map_id.load_from_file(MAP_FILENAME)
     if player:
-        game_loop(player, window_id, map_id)
+        main_loop(player, window_id, map_id)
 
-
-def game_loop(player, window_id, map_id) -> None:
+def main_loop(player, window_id, map_id) -> None:
     """
-        Main loop
         Waiting for an event
+        *param player: id of player
+        *param window_id: id of window
+        *param map_id: id of map
+        *type player: entity.EntityManager
+        *type window_id: window.WindowManager
+        *type map_id: map.MapManager
+        *return: None
     """
     continue_main = True
     window_id.refresh_window(map_id)
@@ -41,7 +46,6 @@ def game_loop(player, window_id, map_id) -> None:
                         window_id.refresh_window(map_id)
             elif event.type == QUIT:
                 continue_main = False
-
 
 if __name__ == "__main__":
     main()

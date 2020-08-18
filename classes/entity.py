@@ -30,8 +30,6 @@ class EntityManager:
         self.state = 0
         self.char = char
 
-        self.map.entity_position[position] = self
-
     @property
     def pos_x(self) -> int:
         """

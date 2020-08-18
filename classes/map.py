@@ -6,9 +6,8 @@
 
 import os
 from classes.locale import ITEMS_NUMBER, MAP_SIZE, \
-    IMAGE_ITEM_1, IMAGE_ITEM_2, IMAGE_ITEM_3, \
-    IMAGE_ITEM_4, IMAGE_ITEM_5, IMAGE_ITEM_6, \
-    PATH_CHAR, DEPARTURE_CHAR, letter_to_icon
+    items_icon, PATH_CHAR, START_CHAR, letter_to_icon,\
+    STATE_OVER
 from classes.entity import EntityManager
 from random import choice
 
@@ -53,12 +52,13 @@ class MapManager:
                                                    letter_to_icon[letter],
                                                    position=(x, y),
                                                    char=letter)
-                                if letter == DEPARTURE_CHAR:
+                                self.entity_position[(x, y)] = id
+                                if letter == START_CHAR:
                                     player = id
 
                 if player is None:  # no departure
-                    print(f"Number departure error, {map_file}\
-                        needs one case with {DEPARTURE_CHAR}.")
+                    print(f"Start case error, {map_file}\
+                        needs one case with {START_CHAR}.")
                     return None
                 if len(self.path_position) < ITEMS_NUMBER:
                     print(f"{map_file} needs {ITEMS_NUMBER} \
@@ -79,24 +79,27 @@ class MapManager:
             *return: None
         """
         # generate items
-        if ITEMS_NUMBER > 6 or ITEMS_NUMBER < 1:
-            print("locale file : ITEM_NUMBER error, must be in [1, 6]")
+        if ITEMS_NUMBER > STATE_OVER-2 or ITEMS_NUMBER < 1:
+            print(f"locale file : ITEM_NUMBER error, must be in [1, {STATE_OVER-2}]")
             return None
-
-        item_name_list = [IMAGE_ITEM_1, IMAGE_ITEM_2, IMAGE_ITEM_3,
-                          IMAGE_ITEM_4, IMAGE_ITEM_5, IMAGE_ITEM_6]
+        if ITEMS_NUMBER > len(items_icon):
+            print(f"locale file : items_icon error, contains not enough items")
+            return None
 
         empty_case = self.path_position - set(self.entity_position.keys())
         empty_case = list(empty_case)
-
+            
         for i in range(ITEMS_NUMBER):
-            if item_name_list[i] is None:
-                print(f"locale file : value error : IMAGE_ITEM_{i} is None")
+            if items_icon[i] is None:
+                print(f"locale file : value error : items_icon[{i}] is None")
                 return None
 
-            EntityManager(self, icon=item_name_list[i],
-                          position=self.random_position(empty_case),
-                          char=PATH_CHAR)
+            item_position = self.random_position(empty_case)
+            id = EntityManager(self, icon=items_icon[i],
+                               position=item_position,
+                               char=PATH_CHAR)
+
+            self.entity_position[item_position] = id
 
     def random_position(self, empty_case: list) -> tuple:
         """
