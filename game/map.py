@@ -5,10 +5,11 @@
 """
 
 import os
-from classes.locale import ITEMS_NUMBER, MAP_SIZE, \
+from config import locale
+from config.locale import ITEMS_NUMBER, MAP_SIZE, \
     items_icon, PATH_CHAR, START_CHAR, letter_to_icon,\
     STATE_OVER
-from classes.entity import EntityManager
+from game.entity import EntityManager
 from random import choice
 
 

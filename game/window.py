@@ -4,7 +4,8 @@
     Class to manage the window
 """
 
-from classes.locale import IMAGE_GROUND, CASE_SIZE, WINDOW_SIZE,\
+from config import locale
+from config.locale import IMAGE_GROUND, CASE_SIZE, WINDOW_SIZE,\
     WINDOW_TITLE, IMAGE_WALL, MAP_SIZE
 import pygame
 

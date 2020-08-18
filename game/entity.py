@@ -5,7 +5,8 @@
 """
 
 import pygame
-from classes.locale import ITEMS_NUMBER, STATE_DEAD, STATE_OVER,\
+from config import locale
+from config.locale import ITEMS_NUMBER, STATE_DEAD, STATE_OVER,\
     GUARD_CHAR, STAIR_CHAR, PATH_CHAR
 
 

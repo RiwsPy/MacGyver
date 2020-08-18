@@ -1,8 +1,8 @@
 # coding: utf-8
 
 import pygame
-from classes import window, map
-from classes.locale import MAP_FILENAME, FPS_MAX
+from game import window, map
+from config.locale import MAP_FILENAME, FPS_MAX
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE,\
     K_RIGHT, K_LEFT, K_UP, K_DOWN
 

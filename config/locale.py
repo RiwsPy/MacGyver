@@ -2,7 +2,7 @@ MAP_SIZE = 15
 CASE_SIZE = 32
 WINDOW_SIZE = MAP_SIZE * CASE_SIZE
 WINDOW_TITLE = "MacGyver Escape"
-MAP_FILENAME = "map"
+MAP_FILENAME = "data/map_01.txt"
 
 PATH = "ressource/"
 PATH_CHAR = "O"
