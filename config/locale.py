@@ -4,7 +4,7 @@ WINDOW_SIZE = MAP_SIZE * CASE_SIZE
 WINDOW_TITLE = "MacGyver Escape"
 MAP_FILENAME = "data/map_01.txt"
 
-PATH = "ressource/"
+PATH = "resource/"
 PATH_CHAR = "O"
 STAIR_CHAR = "S"
 START_CHAR = "D"
@@ -16,7 +16,7 @@ IMAGE_GROUND = PATH + "ground.png"
 
 letter_to_icon = {
     STAIR_CHAR: PATH + "stair.png",
-    START_CHAR: PATH + "PJ.png",
+    START_CHAR: PATH + "player.png",
     PATH_CHAR: IMAGE_GROUND,
     GUARD_CHAR: PATH + "guard.png"
 }
