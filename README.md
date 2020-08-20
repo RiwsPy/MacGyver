@@ -7,14 +7,18 @@ To win : collect three objects randomly in the labyrinth (needle, ether and plas
 Script: Python
 
 Files:
-- classes/ (modules)
+- config/
     - locale.py (constants)
-    - entity.py (character and item)
-    - map.py (map reader)
+- data/
+    - map_01.txt (labyrinth structure)
+- game/ (modules)
+    - entity.py (character and items)
+    - map.py (map loader)
     - window.py (initialisation and window refresh)
 - resource/ (images)
-- map (labyrinth structure)
-
+- main.py
+- Pipfile.lock
+- README.md
 
 
 To clone and play to this game, you must follow these instructions :
