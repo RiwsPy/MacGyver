@@ -33,10 +33,10 @@ def main_loop(player, window_id, map_id) -> None:
         *return: None
     """
     continue_main = True
-    window_id.refresh_window(map_id)
     event_to_method = \
         {K_RIGHT: "right", K_LEFT: "left", K_UP: "up", K_DOWN: "down"}
 
+    window_id.refresh_all(map_id)
     while continue_main:
         pygame.time.Clock().tick(FPS_MAX)  # limitation to 30 loops/seconde
         for event in pygame.event.get():

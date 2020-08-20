@@ -5,7 +5,7 @@
 """
 
 import pygame
-from config.locale import ITEMS_NUMBER, STATE_DEAD, STATE_OVER,\
+from config.locale import ITEMS_NUMBER, STATE_OVER,\
     GUARD_CHAR, STAIR_CHAR, PATH_CHAR
 
 
@@ -106,7 +106,6 @@ class EntityManager:
         """
         next_position = getattr(self, method, self.position)
         if self.check_move(next_position):
-            old_position = self.position
             if next_position in self.map.entity_position:
                 id = self.map.entity_position[next_position]
                 char = id.char
@@ -116,6 +115,7 @@ class EntityManager:
                     self.meet_guard()
                 elif char == STAIR_CHAR:
                     self.end_game()
+            old_position = self.position
             self.position = next_position
             return (old_position, next_position)
         return ()
@@ -131,8 +131,7 @@ class EntityManager:
         """
         if self.position == position:
             return False
-        elif self.state == STATE_OVER or \
-                self.state == STATE_DEAD:
+        elif self.state == STATE_OVER:
             return False
 
         return self.map.is_valid_position(position)
@@ -148,8 +147,7 @@ class EntityManager:
             *return: None
         """
         print("Great job! You found an object.")
-        if self.state < ITEMS_NUMBER:
-            self.state += 1
+        self.state += 1
         if self.state == ITEMS_NUMBER:
             print("You craft a syringe to put the guard to sleep!")
 
@@ -163,7 +161,7 @@ class EntityManager:
             print("You put the guard to sleep!")
         else:
             print("The guard sees you! It's death !")
-            self.state = STATE_DEAD
+            self.state = STATE_OVER
 
     def end_game(self) -> None:
         """

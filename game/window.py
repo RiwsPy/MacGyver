@@ -29,7 +29,7 @@ class WindowManager:
         # window's title
         pygame.display.set_caption(WINDOW_TITLE)
 
-    def refresh_window(self, map_id) -> None:
+    def refresh_all(self, map_id) -> None:
         """
             Refresh the game window
 

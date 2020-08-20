@@ -32,4 +32,3 @@ items_icon = [
 FPS_MAX = 30
 
 STATE_OVER = MAP_SIZE * MAP_SIZE + 1
-STATE_DEAD = MAP_SIZE * MAP_SIZE + 2
